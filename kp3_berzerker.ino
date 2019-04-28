@@ -7,6 +7,8 @@
 #define GREEN Adafruit_NeoPixel::Color(0,0x20,0)
 #define BLUE Adafruit_NeoPixel::Color(0,0,0x20)
 #define YELLOW Adafruit_NeoPixel::Color(0x20,0x20,0)
+#define PURPLE Adafruit_NeoPixel::Color(0x20,0,0x20)
+#define PALE Adafruit_NeoPixel::Color(0x02,0x02,0x02)
 
 #define PPQN 24
 #define MS_PER_SEC 1000
@@ -82,6 +84,14 @@ class Button {
     virtual void released(byte key) {
       _pressed = false;
       TRELLIS.setPixelColor(key, off_color());
+    }
+
+    virtual void refresh(byte key) {
+      uint32_t color = off_color();
+      if (_pressed) {
+        color = on_color();
+      }
+      TRELLIS.setPixelColor(key, color);
     }
     
     virtual void group_pressed() {
@@ -162,6 +172,41 @@ class YButton : public Button {
       }
 };
 
+class NoteButton : public Button {
+  private:
+      byte _value;
+  public:
+      NoteButton() : Button() {
+        _group = 4;
+        _value = 0;
+      }
+      
+      void value(byte new_value) {
+        _value = new_value;
+      }
+      
+      uint32_t off_color() {
+        return PALE;
+      }
+      
+      uint32_t on_color() {
+        return PURPLE;
+      }
+      
+      void pressed(byte key) {
+        Button::pressed(key);
+        TRELLIS.controlChange(12, _value);
+      }
+
+      void group_pressed() {
+        TRELLIS.controlChange(92,0xFF);
+      }
+
+      void group_released() {
+        TRELLIS.controlChange(92,0x00);
+      }
+};
+
 class Layout {
   protected:
     Button *_all[32];
@@ -171,6 +216,56 @@ class Layout {
     
     Button **all() {
       return _all;
+    }
+
+    void refresh() {
+      for (byte i=0; i < 32; i++) {
+        _all[i]->refresh(i);
+      }
+    }
+};
+
+
+/* -  C# D# -  F# G# A# -
+ * C  D  E  F  G  A  B  C
+ * 
+ * FF 01 03 FF 06 08 0A FF
+ * 00 02 04 05 07 09 0B 0C
+ */
+ 
+class OneOctaveLayout: public Layout {
+  private:
+    Button misc[11];
+    NoteButton notes[13];
+    YButton yButtons[8];
+  public:
+    OneOctaveLayout() : Layout() {
+      for (byte i=0; i< 13; i++) {
+        notes[i].value(ONE_OCT_VALUES[i]);
+      }
+      _all[0] = &misc[0];
+      _all[1] = &notes[1];
+      _all[2] = &notes[3];
+      _all[3] = &misc[1];
+      _all[4] = &notes[6];
+      _all[5] = &notes[8];
+      _all[6] = &notes[10];
+      _all[7] = &misc[2];
+      _all[8] = &notes[0];
+      _all[9] = &notes[2];
+      _all[10] = &notes[4];
+      _all[11] = &notes[5];
+      _all[12] = &notes[7];
+      _all[13] = &notes[9];
+      _all[14] = &notes[11];
+      _all[15] = &notes[12];
+      
+      for (byte i=16; i < 24; i++) {
+        _all[i] = &yButtons[i - 16];
+      }
+      for (byte i=24; i < 32; i++) {
+        _all[i] = &misc[i - 21];
+      }
     }
 };
 
@@ -199,6 +294,7 @@ class DefaultLayout: public Layout {
 };
 
 static DefaultLayout DEFAULT_LAYOUT = DefaultLayout();
+static OneOctaveLayout ONE_OCTAVE_LAYOUT = OneOctaveLayout();
 static Layout *CURRENT_LAYOUT;
 
 void setup() {
@@ -208,11 +304,13 @@ void setup() {
   TRELLIS.enableUARTMIDI(true);
   TRELLIS.setUARTMIDIchannel(MIDI_CHANNEL);
   CURRENT_DELAY = micros_per_pulse(CURRENT_TEMPO);
-  CURRENT_LAYOUT = &DEFAULT_LAYOUT;
+  //CURRENT_LAYOUT = &DEFAULT_LAYOUT;
+  CURRENT_LAYOUT = &ONE_OCTAVE_LAYOUT;
+  CURRENT_LAYOUT->refresh();
 }
 
 void loop() {
-  static byte pressed_count[] = {0,0,0,0};
+  static byte pressed_count[] = {0,0,0,0,0};
   TRELLIS.tick();
   uint32_t color = Adafruit_NeoPixel::Color(0,0,0x20);
   while (TRELLIS.available()){
@@ -242,10 +340,3 @@ void loop() {
   TRELLIS.sendMIDI();
   clock_delay(CURRENT_DELAY);
 }
-
-/* -  C# D# -  F# G# A# -
- * C  D  E  F  G  A  B  C
- * 
- * FF 01 03 FF 06 08 0A FF
- * 00 02 04 05 07 09 0B 0C
- */
