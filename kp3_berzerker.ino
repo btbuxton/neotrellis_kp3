@@ -57,28 +57,37 @@ class Button {
       _pressed = false;
       _group = 0;
     }
+    
     boolean isPressed() {
       return _pressed;
     }
+    
     byte group() {
       return _group;
     }
-    virtual uint32_t color() {
+    
+    virtual uint32_t on_color() {
       return RED;
     }
+    
+    virtual uint32_t off_color() {
+      return BLACK;
+    }
+    
     virtual void pressed(byte key) {
       _pressed = true;
-      TRELLIS.setPixelColor(key, color());
+      TRELLIS.setPixelColor(key, on_color());
     }
+    
     virtual void released(byte key) {
       _pressed = false;
-      TRELLIS.setPixelColor(key, BLACK);
+      TRELLIS.setPixelColor(key, off_color());
     }
+    
     virtual void group_pressed() {
-      
     }
+    
     virtual void group_released() {
-      
     }
 };
 
@@ -91,9 +100,11 @@ class TempoButton : public Button {
         _value = value;
         _group = 1;
       }
-      uint32_t color() {
+      
+      uint32_t on_color() {
         return GREEN;
       }
+      
       void pressed(byte key) {
         Button::pressed(key);
         CURRENT_TEMPO = _value;
@@ -107,7 +118,7 @@ class XButton : public Button {
         _group = 2;
       }
       
-      uint32_t color() {
+      uint32_t on_color() {
         return BLUE;
       }
       
@@ -115,7 +126,7 @@ class XButton : public Button {
         Button::pressed(key);
         byte value = CC_VALUES[key % 8];
         TRELLIS.controlChange(12, value);
-        Serial.println(value);
+        //Serial.println(value);
       }
 
       void group_pressed() {
@@ -132,7 +143,7 @@ class YButton : public Button {
       YButton() : Button() {
         _group = 3;
       }
-      uint32_t color() {
+      uint32_t on_color() {
         return YELLOW;
       }
       
@@ -151,12 +162,44 @@ class YButton : public Button {
       }
 };
 
-static Button* ALL[32];
-static Button MISC_BUTTONS[13];
-static XButton X_BUTTONS[8];
-static YButton Y_BUTTONS[8];
-static TempoButton TEMPO_BUTTONS[] = {TempoButton(60), TempoButton(90), TempoButton(120)};
+class Layout {
+  protected:
+    Button *_all[32];
+  public:
+    Layout() {  
+    }
+    
+    Button **all() {
+      return _all;
+    }
+};
 
+class DefaultLayout: public Layout {
+  private:
+    Button misc[13];
+    XButton xButtons[8];
+    YButton yButtons[8];
+    TempoButton tempoButtons[3] = {TempoButton(60), TempoButton(90), TempoButton(120)};
+
+  public:
+  DefaultLayout() : Layout() {
+    for (byte i=0; i < 32; i++) {
+      if (i < 8) {
+        _all[i] = &xButtons[i];
+      } else if (i < 16) {
+        _all[i] = &yButtons[i - 8];
+      } else if (i < 29) {
+        _all[i] = &misc[i - 16];
+      } else {
+        _all[i] = &tempoButtons[i - 29];
+      }
+    }
+  }
+
+};
+
+static DefaultLayout DEFAULT_LAYOUT = DefaultLayout();
+static Layout *CURRENT_LAYOUT;
 
 void setup() {
   Serial.begin(115200);
@@ -165,18 +208,7 @@ void setup() {
   TRELLIS.enableUARTMIDI(true);
   TRELLIS.setUARTMIDIchannel(MIDI_CHANNEL);
   CURRENT_DELAY = micros_per_pulse(CURRENT_TEMPO);
-
-  for (byte i=0; i < 32; i++) {
-    if (i < 8) {
-      ALL[i] = &X_BUTTONS[i];
-    } else if (i < 16) {
-      ALL[i] = &Y_BUTTONS[i - 8];
-    } else if (i < 29) {
-      ALL[i] = &MISC_BUTTONS[i - 16];
-    } else {
-      ALL[i] = &TEMPO_BUTTONS[i - 29];
-    }
-  }
+  CURRENT_LAYOUT = &DEFAULT_LAYOUT;
 }
 
 void loop() {
@@ -186,7 +218,8 @@ void loop() {
   while (TRELLIS.available()){
     keypadEvent e = TRELLIS.read();
     byte key = e.bit.KEY;
-    Button* state = ALL[key];
+    Button **all = CURRENT_LAYOUT->all();
+    Button* state = all[key];
     if (e.bit.EVENT == KEY_JUST_PRESSED) {
       state->pressed(key);
       if (++pressed_count[state->group()] > 0) {
@@ -209,3 +242,10 @@ void loop() {
   TRELLIS.sendMIDI();
   clock_delay(CURRENT_DELAY);
 }
+
+/* -  C# D# -  F# G# A# -
+ * C  D  E  F  G  A  B  C
+ * 
+ * FF 01 03 FF 06 08 0A FF
+ * 00 02 04 05 07 09 0B 0C
+ */
