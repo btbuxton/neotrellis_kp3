@@ -3,12 +3,11 @@
 #define MIDI_CHANNEL 0
 
 #define BLACK Adafruit_NeoPixel::Color(0,0,0)
-#define RED Adafruit_NeoPixel::Color(0x20,0,0)
-#define GREEN Adafruit_NeoPixel::Color(0,0x20,0)
-#define BLUE Adafruit_NeoPixel::Color(0,0,0x20)
-#define YELLOW Adafruit_NeoPixel::Color(0x20,0x20,0)
-#define PURPLE Adafruit_NeoPixel::Color(0x20,0,0x20)
-#define PALE Adafruit_NeoPixel::Color(0x02,0x02,0x02)
+#define RED Adafruit_NeoPixel::Color(0x22,0,0)
+#define GREEN Adafruit_NeoPixel::Color(0,0x22,0)
+#define BLUE Adafruit_NeoPixel::Color(0,0,0x22)
+#define YELLOW Adafruit_NeoPixel::Color(0x22,0x22,0)
+#define PURPLE Adafruit_NeoPixel::Color(0x22,0,0x22)
 
 #define PPQN 24
 #define MS_PER_SEC 1000
@@ -69,11 +68,11 @@ class Button {
     }
     
     virtual uint32_t on_color() {
-      return RED;
+      return BLACK;
     }
     
     virtual uint32_t off_color() {
-      return BLACK;
+      return on_color() & 0x020202;
     }
     
     virtual void pressed(byte key) {
@@ -183,10 +182,6 @@ class NoteButton : public Button {
       
       void value(byte new_value) {
         _value = new_value;
-      }
-      
-      uint32_t off_color() {
-        return PALE;
       }
       
       uint32_t on_color() {
@@ -340,3 +335,11 @@ void loop() {
   TRELLIS.sendMIDI();
   clock_delay(CURRENT_DELAY);
 }
+
+// TODO
+// Two Octave Layout
+// Layout Switch
+// Accelerometer for x/y values (new button)
+// Sample turn/off
+// LFO between values ( 2 pressed )
+// Arp for notes (or between values of more than 2 pressed)
