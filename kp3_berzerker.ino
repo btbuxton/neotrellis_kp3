@@ -1,13 +1,10 @@
 #include <Adafruit_NeoTrellisM4.h>
-#include "button.h"
 #include "color.h"
+#include "layout.h"
+#include "context.h"
+#include "button.h"
 
 #define MIDI_CHANNEL 0
-
-#define PPQN 24
-#define MS_PER_SEC 1000
-#define MICROS_PER_MS 1000
-#define SEC_PER_MIN 60
 
 #define CLOCK_MSG 0xF8
 
@@ -18,12 +15,6 @@ static const byte TWO_OCT_VALUES[] = {0,6,11,16,21,26,31,36,41,46,51,56,61,65,70
 static const byte ONE_OCT_VALUES[] = {0,11,20,29,38,47,56,65,75,84,93,102,120};
 
 static Adafruit_NeoTrellisM4 TRELLIS = Adafruit_NeoTrellisM4();
-static uint16_t CURRENT_TEMPO = 120;
-static uint32_t CURRENT_DELAY = 10000;
-
-uint32_t micros_per_pulse(uint16_t tempo) {
-  return (uint32_t)((SEC_PER_MIN * MS_PER_SEC * MICROS_PER_MS) / (float)(PPQN * tempo));
-}
 
 // This is still off by 0.5 bpm - rounding/etc
 void clock_delay(uint32_t delay_micros) {
@@ -43,35 +34,6 @@ void clock_delay(uint32_t delay_micros) {
   then = micros();
 }
 
-class Layout {
-  protected:
-    Button *_all[32];
-    Layout *_next;
-  public:
-    Layout() {  
-    }
-    
-    Button **all() {
-      return _all;
-    }
-
-    void refresh() {
-      for (byte i=0; i < 32; i++) {
-        _all[i]->refresh(i, &TRELLIS);
-      }
-    }
-
-    Layout* next() {
-      return _next;
-    }
-
-    void setNext(Layout *layout) {
-      _next = layout;
-    }
-};
-
-static Layout *CURRENT_LAYOUT;
-
 class NextLayoutButton : public Button {
   private:
     Layout *_next;
@@ -84,12 +46,12 @@ class NextLayoutButton : public Button {
       return RED;
     }
     
-    void released(byte key, Adafruit_NeoTrellisM4* trellis) {
-      Button::released(key, trellis);
-      Serial.println(key);
-      Serial.println((uint32_t)_next);
-      CURRENT_LAYOUT = _next;
-      CURRENT_LAYOUT->refresh();
+    void released(byte key, Context *context) {
+      Button::released(key, context);
+      //Serial.println(key);
+      //Serial.println((uint32_t)_next);
+      context->setLayout(_next);
+      context->layout()->refresh(context);
     }
     
     Layout* next() {
@@ -187,18 +149,18 @@ class DefaultLayout: public Layout {
 static DefaultLayout DEFAULT_LAYOUT = DefaultLayout();
 static OneOctaveLayout ONE_OCTAVE_LAYOUT = OneOctaveLayout();
 
+static Context CONTEXT = Context(&TRELLIS, &DEFAULT_LAYOUT);
+
 void setup() {
   Serial.begin(115200);
   Serial.println("kp3+ berzerker");
   TRELLIS.begin();
   TRELLIS.enableUARTMIDI(true);
   TRELLIS.setUARTMIDIchannel(MIDI_CHANNEL);
-  CURRENT_DELAY = micros_per_pulse(CURRENT_TEMPO);
   
   DEFAULT_LAYOUT.setNext(&ONE_OCTAVE_LAYOUT);
   ONE_OCTAVE_LAYOUT.setNext(&DEFAULT_LAYOUT);
-  CURRENT_LAYOUT = &DEFAULT_LAYOUT;
-  CURRENT_LAYOUT->refresh();
+  CONTEXT.layout()->refresh(&CONTEXT); //TODO move refresh to context
 }
 
 void loop() {
@@ -208,17 +170,17 @@ void loop() {
   while (TRELLIS.available()){
     keypadEvent e = TRELLIS.read();
     byte key = e.bit.KEY;
-    Button **all = CURRENT_LAYOUT->all();
+    Button **all = CONTEXT.layout()->all();
     Button* state = all[key];
     if (e.bit.EVENT == KEY_JUST_PRESSED) {
-      state->pressed(key, &TRELLIS);
+      state->pressed(key, &CONTEXT);
       if (++pressed_count[state->group()] > 0) {
-        state->group_pressed(&TRELLIS);
+        state->group_pressed(&CONTEXT);
       }
     } else if (e.bit.EVENT == KEY_JUST_RELEASED) {
-      state->released(key, &TRELLIS);
+      state->released(key, &CONTEXT);
       if (--pressed_count[state->group()] == 0) {
-        state->group_released(&TRELLIS);
+        state->group_released(&CONTEXT);
       }
     }
 //    for (byte i=0; i < TRELLIS.num_keys(); i++) {
@@ -230,14 +192,13 @@ void loop() {
   //Serial1 is midi
   Serial1.write(CLOCK_MSG); //clock message
   TRELLIS.sendMIDI();
-  clock_delay(CURRENT_DELAY);
+  clock_delay(CONTEXT.clockDelay());
 }
 
 // TODO
-// fix tempo button - context?
-// Break out -> layout
 // Panic button
 // Refactor groups - move to layout - move loop to layout as well
+// Refactor x/y button to take cc/group cc and be the same
 // Two Octave Layout
 // Accelerometer for x/y values (new button)
 // Sample turn/off

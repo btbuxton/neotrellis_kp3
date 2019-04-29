@@ -1,5 +1,9 @@
 #include "button.h"
 #include "color.h"
+#include "layout.h"
+#include "context.h"
+
+static const byte CC_VALUES[] = {0x00, 0x10, 0x20, 0x30, 0x4f, 0x5F, 0x6F, 0x7F};
 
 Button::Button() {
   _pressed = false;
@@ -22,28 +26,28 @@ uint32_t Button::off_color() {
   return on_color() & 0x020202;
 }
 
-void Button::pressed(byte key, Adafruit_NeoTrellisM4* trellis) {
+void Button::pressed(byte key, Context* context) {
   _pressed = true;
-  trellis->setPixelColor(key, on_color());
+  context->trellis()->setPixelColor(key, on_color());
 }
 
-void Button::released(byte key, Adafruit_NeoTrellisM4* trellis) {
+void Button::released(byte key, Context* context) {
   _pressed = false;
-  trellis->setPixelColor(key, off_color());
+  context->trellis()->setPixelColor(key, off_color());
 }
 
-void Button::refresh(byte key, Adafruit_NeoTrellisM4* trellis) {
+void Button::refresh(byte key, Context* context) {
   uint32_t color = off_color();
   if (_pressed) {
     color = on_color();
   }
-  trellis->setPixelColor(key, color);
+  context->trellis()->setPixelColor(key, color);
 }
 
-void Button::group_pressed(Adafruit_NeoTrellisM4* trellis) {
+void Button::group_pressed(Context* context) {
 }
 
-void Button::group_released(Adafruit_NeoTrellisM4* trellis) {
+void Button::group_released(Context* context) {
 }
 
 //class TempoButton
@@ -56,11 +60,9 @@ uint32_t TempoButton::on_color() {
   return GREEN;
 }
 
-void TempoButton::pressed(byte key, Adafruit_NeoTrellisM4* trellis) {
-  Button::pressed(key, trellis);
-  // TODO - Pass in context instead?
-//  CURRENT_TEMPO = _value;
-//  CURRENT_DELAY = micros_per_pulse(CURRENT_TEMPO);
+void TempoButton::pressed(byte key, Context* context) {
+  Button::pressed(key, context);
+  context->setTempo(_value);
 }
 
 //class XButton
@@ -72,18 +74,18 @@ uint32_t XButton::on_color() {
   return BLUE;
 }
 
-void XButton::pressed(byte key, Adafruit_NeoTrellisM4* trellis) {
-  Button::pressed(key, trellis);
+void XButton::pressed(byte key, Context* context) {
+  Button::pressed(key, context);
   byte value = CC_VALUES[key % 8];
-  trellis->controlChange(12, value);
+  context->trellis()->controlChange(12, value);
 }
 
-void XButton::group_pressed(Adafruit_NeoTrellisM4* trellis) {
-  trellis->controlChange(92,0xFF);
+void XButton::group_pressed(Context* context) {
+  context->trellis()->controlChange(92,0xFF);
 }
 
-void XButton::group_released(Adafruit_NeoTrellisM4* trellis) {
-  trellis->controlChange(92,0x00);
+void XButton::group_released(Context* context) {
+  context->trellis()->controlChange(92,0x00);
 }
 
 //class YButton : public Button {
@@ -94,18 +96,18 @@ uint32_t YButton::on_color() {
   return YELLOW;
 }
 
-void YButton::pressed(byte key, Adafruit_NeoTrellisM4* trellis) {
-  Button::pressed(key, trellis);
+void YButton::pressed(byte key, Context* context) {
+  Button::pressed(key, context);
   byte value = CC_VALUES[key % 8];
-  trellis->controlChange(13, value);
+  context->trellis()->controlChange(13, value);
 }
 
-void YButton::group_pressed(Adafruit_NeoTrellisM4* trellis) {
-  trellis->controlChange(92,0xFF);
+void YButton::group_pressed(Context* context) {
+  context->trellis()->controlChange(92,0xFF);
 }
 
-void YButton::group_released(Adafruit_NeoTrellisM4* trellis) {
-  trellis->controlChange(92,0x00);
+void YButton::group_released(Context* context) {
+  context->trellis()->controlChange(92,0x00);
 }
 
 //class NoteButton
@@ -122,15 +124,15 @@ uint32_t NoteButton::on_color() {
   return PURPLE;
 }
 
-void NoteButton::pressed(byte key, Adafruit_NeoTrellisM4* trellis) {
-  Button::pressed(key, trellis);
-  trellis->controlChange(12, _value);
+void NoteButton::pressed(byte key, Context* context) {
+  Button::pressed(key, context);
+  context->trellis()->controlChange(12, _value);
 }
 
-void NoteButton::group_pressed(Adafruit_NeoTrellisM4* trellis) {
-  trellis->controlChange(92,0xFF);
+void NoteButton::group_pressed(Context* context) {
+  context->trellis()->controlChange(92,0xFF);
 }
 
-void NoteButton::group_released(Adafruit_NeoTrellisM4* trellis) {
-  trellis->controlChange(92,0x00);
+void NoteButton::group_released(Context* context) {
+  context->trellis()->controlChange(92,0x00);
 }

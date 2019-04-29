@@ -1,7 +1,6 @@
 #include <Arduino.h>
-#include <Adafruit_NeoTrellisM4.h>
 
-static const byte CC_VALUES[] = {0x00, 0x10, 0x20, 0x30, 0x4f, 0x5F, 0x6F, 0x7F};
+class Context;
 
 class Button {
   private:
@@ -16,11 +15,11 @@ class Button {
     byte group();
     virtual uint32_t on_color();
     virtual uint32_t off_color();
-    virtual void pressed(byte key, Adafruit_NeoTrellisM4* trellis);
-    virtual void released(byte key, Adafruit_NeoTrellisM4* trellis);
-    virtual void refresh(byte key, Adafruit_NeoTrellisM4* trellis);
-    virtual void group_pressed(Adafruit_NeoTrellisM4* trellis);
-    virtual void group_released(Adafruit_NeoTrellisM4* trellis);
+    virtual void pressed(byte key, Context* context);
+    virtual void released(byte key, Context* context);
+    virtual void refresh(byte key, Context* context);
+    virtual void group_pressed(Context* context);
+    virtual void group_released(Context* context);
 };
 
 class TempoButton : public Button {
@@ -30,25 +29,25 @@ class TempoButton : public Button {
     public:
       TempoButton(uint32_t value);
       uint32_t on_color();
-      void pressed(byte key, Adafruit_NeoTrellisM4* trellis);
+      void pressed(byte key, Context* context);
 };
 
 class XButton : public Button {
   public:
       XButton();
       uint32_t on_color();
-      void pressed(byte key, Adafruit_NeoTrellisM4* trellis);
-      virtual void group_pressed(Adafruit_NeoTrellisM4* trellis);
-      virtual void group_released(Adafruit_NeoTrellisM4* trellis);
+      void pressed(byte key, Context* context);
+      virtual void group_pressed(Context* context);
+      virtual void group_released(Context* context);
 };
 
 class YButton : public Button {
   public:
       YButton();
       uint32_t on_color();
-      void pressed(byte key, Adafruit_NeoTrellisM4* trellis);
-      virtual void group_pressed(Adafruit_NeoTrellisM4* trellis);
-      virtual void group_released(Adafruit_NeoTrellisM4* trellis);
+      void pressed(byte key, Context* context);
+      virtual void group_pressed(Context* context);
+      virtual void group_released(Context* context);
 };
 
 class NoteButton : public Button {
@@ -58,7 +57,7 @@ class NoteButton : public Button {
       NoteButton();
       void value(byte new_value);
       uint32_t on_color();
-      void pressed(byte key, Adafruit_NeoTrellisM4* trellis);
-      virtual void group_pressed(Adafruit_NeoTrellisM4* trellis);
-      virtual void group_released(Adafruit_NeoTrellisM4* trellis);
+      void pressed(byte key, Context* context);
+      virtual void group_pressed(Context* context);
+      virtual void group_released(Context* context);
 };
