@@ -14,6 +14,8 @@
 #define MICROS_PER_MS 1000
 #define SEC_PER_MIN 60
 
+#define CLOCK_MSG 0xF8
+
 static const byte CC_VALUES[] = {0x00, 0x10, 0x20, 0x30, 0x4f, 0x5F, 0x6F, 0x7F};
 
 //starts on C - the vocoders are 2 octave
@@ -205,6 +207,7 @@ class NoteButton : public Button {
 class Layout {
   protected:
     Button *_all[32];
+    Layout *_next;
   public:
     Layout() {  
     }
@@ -218,6 +221,45 @@ class Layout {
         _all[i]->refresh(i);
       }
     }
+
+    Layout* next() {
+      return _next;
+    }
+
+    void setNext(Layout *layout) {
+      _next = layout;
+    }
+};
+
+static Layout *CURRENT_LAYOUT;
+
+class NextLayoutButton : public Button {
+  private:
+    Layout *_next;
+
+  public:
+    NextLayoutButton() : Button() {
+    }
+    
+    uint32_t on_color() {
+      return RED;
+    }
+    
+    void released(byte key) {
+      Button::released(key);
+      Serial.println(key);
+      Serial.println((uint32_t)_next);
+      CURRENT_LAYOUT = _next;
+      CURRENT_LAYOUT->refresh();
+    }
+    
+    Layout* next() {
+      return _next;
+    }
+
+    void setNext(Layout *layout) {
+      _next = layout;
+    }
 };
 
 
@@ -230,7 +272,8 @@ class Layout {
  
 class OneOctaveLayout: public Layout {
   private:
-    Button misc[11];
+    Button misc[10];
+    NextLayoutButton nextLayout;
     NoteButton notes[13];
     YButton yButtons[8];
   public:
@@ -238,14 +281,14 @@ class OneOctaveLayout: public Layout {
       for (byte i=0; i< 13; i++) {
         notes[i].value(ONE_OCT_VALUES[i]);
       }
-      _all[0] = &misc[0];
+      _all[0] = &nextLayout;
       _all[1] = &notes[1];
       _all[2] = &notes[3];
-      _all[3] = &misc[1];
+      _all[3] = &misc[0];
       _all[4] = &notes[6];
       _all[5] = &notes[8];
       _all[6] = &notes[10];
-      _all[7] = &misc[2];
+      _all[7] = &misc[1];
       _all[8] = &notes[0];
       _all[9] = &notes[2];
       _all[10] = &notes[4];
@@ -259,14 +302,20 @@ class OneOctaveLayout: public Layout {
         _all[i] = &yButtons[i - 16];
       }
       for (byte i=24; i < 32; i++) {
-        _all[i] = &misc[i - 21];
+        _all[i] = &misc[i - 22];
       }
     }
+    void setNext(Layout *layout) {
+      Layout::setNext(layout);
+      nextLayout.setNext(layout);
+    }
+    
 };
 
 class DefaultLayout: public Layout {
   private:
-    Button misc[13];
+    Button misc[12];
+    NextLayoutButton nextLayout;
     XButton xButtons[8];
     YButton yButtons[8];
     TempoButton tempoButtons[3] = {TempoButton(60), TempoButton(90), TempoButton(120)};
@@ -278,19 +327,26 @@ class DefaultLayout: public Layout {
         _all[i] = &xButtons[i];
       } else if (i < 16) {
         _all[i] = &yButtons[i - 8];
+      } else if (i == 16) {
+        _all[i] = &nextLayout;
       } else if (i < 29) {
-        _all[i] = &misc[i - 16];
+        _all[i] = &misc[i - 17];
       } else {
         _all[i] = &tempoButtons[i - 29];
       }
     }
   }
 
+  //YUCK - get rid of this
+  void setNext(Layout *layout) {
+      Layout::setNext(layout);
+      nextLayout.setNext(layout);
+  }
+
 };
 
 static DefaultLayout DEFAULT_LAYOUT = DefaultLayout();
 static OneOctaveLayout ONE_OCTAVE_LAYOUT = OneOctaveLayout();
-static Layout *CURRENT_LAYOUT;
 
 void setup() {
   Serial.begin(115200);
@@ -299,8 +355,10 @@ void setup() {
   TRELLIS.enableUARTMIDI(true);
   TRELLIS.setUARTMIDIchannel(MIDI_CHANNEL);
   CURRENT_DELAY = micros_per_pulse(CURRENT_TEMPO);
-  //CURRENT_LAYOUT = &DEFAULT_LAYOUT;
-  CURRENT_LAYOUT = &ONE_OCTAVE_LAYOUT;
+  
+  DEFAULT_LAYOUT.setNext(&ONE_OCTAVE_LAYOUT);
+  ONE_OCTAVE_LAYOUT.setNext(&DEFAULT_LAYOUT);
+  CURRENT_LAYOUT = &DEFAULT_LAYOUT;
   CURRENT_LAYOUT->refresh();
 }
 
@@ -331,14 +389,15 @@ void loop() {
 //    }
   }
   //Serial1 is midi
-  Serial1.write(0xF8); //clock message
+  Serial1.write(CLOCK_MSG); //clock message
   TRELLIS.sendMIDI();
   clock_delay(CURRENT_DELAY);
 }
 
 // TODO
+// Breakup file
+// Refactor groups - move to layout - move loop to layout as well
 // Two Octave Layout
-// Layout Switch
 // Accelerometer for x/y values (new button)
 // Sample turn/off
 // LFO between values ( 2 pressed )
