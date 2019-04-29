@@ -1,13 +1,8 @@
 #include <Adafruit_NeoTrellisM4.h>
+#include "button.h"
+#include "color.h"
 
 #define MIDI_CHANNEL 0
-
-#define BLACK Adafruit_NeoPixel::Color(0,0,0)
-#define RED Adafruit_NeoPixel::Color(0x22,0,0)
-#define GREEN Adafruit_NeoPixel::Color(0,0x22,0)
-#define BLUE Adafruit_NeoPixel::Color(0,0,0x22)
-#define YELLOW Adafruit_NeoPixel::Color(0x22,0x22,0)
-#define PURPLE Adafruit_NeoPixel::Color(0x22,0,0x22)
 
 #define PPQN 24
 #define MS_PER_SEC 1000
@@ -16,10 +11,9 @@
 
 #define CLOCK_MSG 0xF8
 
-static const byte CC_VALUES[] = {0x00, 0x10, 0x20, 0x30, 0x4f, 0x5F, 0x6F, 0x7F};
-
 //starts on C - the vocoders are 2 octave
 static const byte TWO_OCT_VALUES[] = {0,6,11,16,21,26,31,36,41,46,51,56,61,65,70,75,80,90,95,100,105,110,115,120,125};
+
 //starts on C - the synths are 1 octave
 static const byte ONE_OCT_VALUES[] = {0,11,20,29,38,47,56,65,75,84,93,102,120};
 
@@ -49,161 +43,6 @@ void clock_delay(uint32_t delay_micros) {
   then = micros();
 }
 
-class Button {
-  private:
-    boolean _pressed;
-  protected:
-    byte _group;
-    
-  public:
-    Button() {
-      _pressed = false;
-      _group = 0;
-    }
-    
-    boolean isPressed() {
-      return _pressed;
-    }
-    
-    byte group() {
-      return _group;
-    }
-    
-    virtual uint32_t on_color() {
-      return BLACK;
-    }
-    
-    virtual uint32_t off_color() {
-      return on_color() & 0x020202;
-    }
-    
-    virtual void pressed(byte key) {
-      _pressed = true;
-      TRELLIS.setPixelColor(key, on_color());
-    }
-    
-    virtual void released(byte key) {
-      _pressed = false;
-      TRELLIS.setPixelColor(key, off_color());
-    }
-
-    virtual void refresh(byte key) {
-      uint32_t color = off_color();
-      if (_pressed) {
-        color = on_color();
-      }
-      TRELLIS.setPixelColor(key, color);
-    }
-    
-    virtual void group_pressed() {
-    }
-    
-    virtual void group_released() {
-    }
-};
-
-class TempoButton : public Button {
-    private:
-      uint32_t _value;
-      
-    public:
-      TempoButton(uint32_t value) : Button() {
-        _value = value;
-        _group = 1;
-      }
-      
-      uint32_t on_color() {
-        return GREEN;
-      }
-      
-      void pressed(byte key) {
-        Button::pressed(key);
-        CURRENT_TEMPO = _value;
-        CURRENT_DELAY = micros_per_pulse(CURRENT_TEMPO);
-      }
-};
-
-class XButton : public Button {
-  public:
-      XButton() : Button() {
-        _group = 2;
-      }
-      
-      uint32_t on_color() {
-        return BLUE;
-      }
-      
-      void pressed(byte key) {
-        Button::pressed(key);
-        byte value = CC_VALUES[key % 8];
-        TRELLIS.controlChange(12, value);
-        //Serial.println(value);
-      }
-
-      void group_pressed() {
-        TRELLIS.controlChange(92,0xFF);
-      }
-
-      void group_released() {
-        TRELLIS.controlChange(92,0x00);
-      }
-};
-
-class YButton : public Button {
-  public:
-      YButton() : Button() {
-        _group = 3;
-      }
-      uint32_t on_color() {
-        return YELLOW;
-      }
-      
-      void pressed(byte key) {
-        Button::pressed(key);
-        byte value = CC_VALUES[key % 8];
-        TRELLIS.controlChange(13, value);
-      }
-
-      void group_pressed() {
-        TRELLIS.controlChange(92,0xFF);
-      }
-
-      void group_released() {
-        TRELLIS.controlChange(92,0x00);
-      }
-};
-
-class NoteButton : public Button {
-  private:
-      byte _value;
-  public:
-      NoteButton() : Button() {
-        _group = 4;
-        _value = 0;
-      }
-      
-      void value(byte new_value) {
-        _value = new_value;
-      }
-      
-      uint32_t on_color() {
-        return PURPLE;
-      }
-      
-      void pressed(byte key) {
-        Button::pressed(key);
-        TRELLIS.controlChange(12, _value);
-      }
-
-      void group_pressed() {
-        TRELLIS.controlChange(92,0xFF);
-      }
-
-      void group_released() {
-        TRELLIS.controlChange(92,0x00);
-      }
-};
-
 class Layout {
   protected:
     Button *_all[32];
@@ -218,7 +57,7 @@ class Layout {
 
     void refresh() {
       for (byte i=0; i < 32; i++) {
-        _all[i]->refresh(i);
+        _all[i]->refresh(i, &TRELLIS);
       }
     }
 
@@ -245,8 +84,8 @@ class NextLayoutButton : public Button {
       return RED;
     }
     
-    void released(byte key) {
-      Button::released(key);
+    void released(byte key, Adafruit_NeoTrellisM4* trellis) {
+      Button::released(key, trellis);
       Serial.println(key);
       Serial.println((uint32_t)_next);
       CURRENT_LAYOUT = _next;
@@ -372,14 +211,14 @@ void loop() {
     Button **all = CURRENT_LAYOUT->all();
     Button* state = all[key];
     if (e.bit.EVENT == KEY_JUST_PRESSED) {
-      state->pressed(key);
+      state->pressed(key, &TRELLIS);
       if (++pressed_count[state->group()] > 0) {
-        state->group_pressed();
+        state->group_pressed(&TRELLIS);
       }
     } else if (e.bit.EVENT == KEY_JUST_RELEASED) {
-      state->released(key);
+      state->released(key, &TRELLIS);
       if (--pressed_count[state->group()] == 0) {
-        state->group_released();
+        state->group_released(&TRELLIS);
       }
     }
 //    for (byte i=0; i < TRELLIS.num_keys(); i++) {
@@ -395,10 +234,13 @@ void loop() {
 }
 
 // TODO
-// Breakup file
+// fix tempo button - context?
+// Break out -> layout
+// Panic button
 // Refactor groups - move to layout - move loop to layout as well
 // Two Octave Layout
 // Accelerometer for x/y values (new button)
 // Sample turn/off
+// Mute/Hold/other buttons?
 // LFO between values ( 2 pressed )
 // Arp for notes (or between values of more than 2 pressed)
