@@ -62,6 +62,17 @@ class NoteButton : public Button {
       virtual void group_released(Context* context);
 };
 
+class PlayButton : public Button {
+  private:
+    byte _value;
+  public:
+    PlayButton();
+    void value(byte new_value);
+    uint32_t on_color();
+    void pressed(byte key, Context* context);
+    void released(byte key, Context* context);
+};
+
 class NextLayoutButton : public Button {
   public:
     NextLayoutButton();

@@ -137,6 +137,26 @@ void NoteButton::group_released(Context* context) {
   context->trellis()->controlChange(92,0x00);
 }
 
+PlayButton::PlayButton() : Button() {
+  _value = 0;
+}
+
+void PlayButton::value(byte new_value) {
+  _value = new_value;
+}
+
+uint32_t PlayButton::on_color() {
+  return AQUA;
+}
+
+void PlayButton::pressed(byte key, Context* context) {
+  context->trellis()->noteOn(_value, 0x7F);
+}
+
+void PlayButton::released(byte key, Context* context) {
+  context->trellis()->noteOff(_value, 0x00);
+}
+
 NextLayoutButton::NextLayoutButton() : Button() {
 }
 

@@ -74,9 +74,7 @@ void loop() {
 // Panic button
 // Refactor groups - move to layout - move loop to layout as well
 // Refactor x/y button to take cc/group cc and be the same
-// Two Octave Layout
 // Accelerometer for x/y values (new button)
-// Sample turn/off
 // Mute/Hold/other buttons?
 // LFO between values ( 2 pressed )
 // Arp for notes (or between values of more than 2 pressed)

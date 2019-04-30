@@ -72,14 +72,19 @@ TwoOctaveLayout::TwoOctaveLayout() : Layout() {
   for (byte i=0; i<25; i++) {
     notes[i].value(TWO_OCT_VALUES[i]);
   }
+  samples[0].value(36);
+  samples[1].value(37);
+  samples[2].value(38);
+  samples[3].value(39);
+  
   _all[0] = &nextLayout;
   _all[1] = &notes[1];
   _all[2] = &notes[3];
-  _all[3] = &misc[0];
+  _all[3] = &samples[0];
   _all[4] = &notes[6];
   _all[5] = &notes[8];
   _all[6] = &notes[10];
-  _all[7] = &misc[1];
+  _all[7] = &samples[1];
   _all[8] = &notes[0];
   _all[9] = &notes[2];
   _all[10] = &notes[4];
@@ -89,14 +94,14 @@ TwoOctaveLayout::TwoOctaveLayout() : Layout() {
   _all[14] = &notes[11];
   _all[15] = &notes[12];
   
-  _all[16] = &misc[2];
+  _all[16] = &misc[0];
   _all[17] = &notes[13];
   _all[18] = &notes[15];
-  _all[19] = &misc[3];
+  _all[19] = &samples[2];
   _all[20] = &notes[18];
   _all[21] = &notes[20];
   _all[22] = &notes[22];
-  _all[23] = &misc[4];
+  _all[23] = &samples[3];
   _all[24] = &notes[12];
   _all[25] = &notes[14];
   _all[26] = &notes[16];
