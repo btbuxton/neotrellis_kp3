@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "layout.h"
-#include "button.h"
 #include "context.h"
+#include "button.h"
 
 Layout::Layout() {  
 }

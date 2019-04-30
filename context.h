@@ -17,4 +17,6 @@ class Context {
     uint16_t tempo();
     void setTempo(uint16_t newTempo);
     uint32_t clockDelay();
+    void refresh();
+    void changeToNextLayout();
 };

@@ -61,3 +61,10 @@ class NoteButton : public Button {
       virtual void group_pressed(Context* context);
       virtual void group_released(Context* context);
 };
+
+class NextLayoutButton : public Button {
+  public:
+    NextLayoutButton();
+    uint32_t on_color();
+    void released(byte key, Context *context);
+};

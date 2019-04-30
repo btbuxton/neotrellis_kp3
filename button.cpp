@@ -136,3 +136,15 @@ void NoteButton::group_pressed(Context* context) {
 void NoteButton::group_released(Context* context) {
   context->trellis()->controlChange(92,0x00);
 }
+
+NextLayoutButton::NextLayoutButton() : Button() {
+}
+
+uint32_t NextLayoutButton::on_color() {
+  return RED;
+}
+
+void NextLayoutButton::released(byte key, Context *context) {
+  Button::released(key, context);
+  context->changeToNextLayout();
+}

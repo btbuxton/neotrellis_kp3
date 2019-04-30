@@ -1,5 +1,5 @@
 #include "context.h"
-
+#include "layout.h"
 
 #define PPQN 24
 #define MS_PER_SEC 1000
@@ -15,6 +15,7 @@ Context::Context(Adafruit_NeoTrellisM4* trellis, Layout* initial) {
   _layout = initial;
   setTempo(120);
 }
+
 Adafruit_NeoTrellisM4* Context::trellis() {
   return _trellis;
 }
@@ -38,4 +39,13 @@ void Context::setTempo(uint16_t newTempo) {
 
 uint32_t Context::clockDelay() {
   return _clockDelay;
+}
+
+void Context::refresh() {
+  _layout->refresh(this);
+}
+
+void Context::changeToNextLayout() {
+  _layout = _layout->next();
+  refresh();
 }

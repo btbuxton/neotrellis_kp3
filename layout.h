@@ -1,5 +1,5 @@
-class Button;
 class Context;
+class Button;
 
 class Layout {
   protected:
