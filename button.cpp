@@ -1,3 +1,4 @@
+#include <Adafruit_ADXL343.h>
 #include "button.h"
 #include "color.h"
 #include "layout.h"
@@ -24,6 +25,10 @@ uint32_t Button::on_color() {
 
 uint32_t Button::off_color() {
   return on_color() & 0x020202;
+}
+
+void Button::update(byte key, Context* context) {
+  
 }
 
 void Button::pressed(byte key, Context* context) {
@@ -155,6 +160,28 @@ void PlayButton::pressed(byte key, Context* context) {
 
 void PlayButton::released(byte key, Context* context) {
   context->trellis()->noteOff(_value, 0x00);
+}
+
+AccelButton::AccelButton(byte cc) : Button() {
+  _cc = cc;
+}
+
+uint32_t AccelButton::on_color() {
+  return WHOKNOWS;
+}
+
+void AccelButton::update(byte key, Context* context) {
+  Button::update(key, context);
+  if (!isPressed()) {
+    return;
+  }
+  sensors_event_t event;
+  context->accel()->getEvent(&event);
+  float y_value = event.acceleration.y;
+  // TODO move to a function that does this
+  byte value = (abs(y_value) / 11.0) * 0x7f;
+  //Serial.print("accel "); Serial.print(y_value); Serial.print(","); Serial.println(value);
+  context->trellis()->controlChange(_cc, value);
 }
 
 NextLayoutButton::NextLayoutButton() : Button() {

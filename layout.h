@@ -10,6 +10,7 @@ class Layout {
     
     Button **all();
     void refresh(Context* context);
+    void update(Context* context);
     Layout* next();
     void setNext(Layout *layout);
 };

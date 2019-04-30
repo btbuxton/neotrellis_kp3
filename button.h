@@ -15,6 +15,7 @@ class Button {
     byte group();
     virtual uint32_t on_color();
     virtual uint32_t off_color();
+    virtual void update(byte key, Context* context);
     virtual void pressed(byte key, Context* context);
     virtual void released(byte key, Context* context);
     virtual void refresh(byte key, Context* context);
@@ -71,6 +72,15 @@ class PlayButton : public Button {
     uint32_t on_color();
     void pressed(byte key, Context* context);
     void released(byte key, Context* context);
+};
+
+class AccelButton : public Button {
+  private:
+    byte _cc;
+  public:
+    AccelButton(byte cc);
+    uint32_t on_color();
+    void update(byte key, Context* context);
 };
 
 class NextLayoutButton : public Button {

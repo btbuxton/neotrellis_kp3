@@ -24,7 +24,7 @@ class OneOctaveLayout: public Layout {
 
 class TwoOctaveLayout: public Layout {
   private:
-    Button misc[1];
+    AccelButton fxDepth = AccelButton(94);
     PlayButton samples[4];
     NextLayoutButton nextLayout;
     NoteButton notes[25];

@@ -16,6 +16,12 @@ void Layout::refresh(Context* context) {
   }
 }
 
+void Layout::update(Context* context) {
+  for (byte i=0; i < 32; i++) {
+    _all[i]->update(i, context);
+  }
+}
+
 Layout* Layout::next() {
   return _next;
 }

@@ -1,5 +1,6 @@
 #include "context.h"
 #include "layout.h"
+#include <Adafruit_ADXL343.h>
 
 #define PPQN 24
 #define MS_PER_SEC 1000
@@ -10,14 +11,19 @@ uint32_t micros_per_pulse(uint16_t tempo) {
   return (uint32_t)((SEC_PER_MIN * MS_PER_SEC * MICROS_PER_MS) / (float)(PPQN * tempo));
 }
 
-Context::Context(Adafruit_NeoTrellisM4* trellis, Layout* initial) {
+Context::Context(Adafruit_NeoTrellisM4* trellis, Adafruit_ADXL343* accel, Layout* initial) {
   _trellis = trellis;
+  _accel = accel;
   _layout = initial;
   setTempo(120);
 }
 
 Adafruit_NeoTrellisM4* Context::trellis() {
   return _trellis;
+}
+
+Adafruit_ADXL343* Context::accel() {
+  return _accel;
 }
 
 Layout* Context::layout() {
@@ -43,6 +49,10 @@ uint32_t Context::clockDelay() {
 
 void Context::refresh() {
   _layout->refresh(this);
+}
+
+void Context::update() {
+  _layout->update(this);
 }
 
 void Context::changeToNextLayout() {

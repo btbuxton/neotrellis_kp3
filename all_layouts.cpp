@@ -94,7 +94,7 @@ TwoOctaveLayout::TwoOctaveLayout() : Layout() {
   _all[14] = &notes[11];
   _all[15] = &notes[12];
   
-  _all[16] = &misc[0];
+  _all[16] = &fxDepth;
   _all[17] = &notes[13];
   _all[18] = &notes[15];
   _all[19] = &samples[2];
