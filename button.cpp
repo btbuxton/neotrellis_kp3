@@ -24,7 +24,7 @@ uint32_t Button::on_color() {
 }
 
 uint32_t Button::off_color() {
-  return on_color() & 0x020202;
+  return on_color() & 0x3F3F3F;
 }
 
 void Button::update(byte key, Context* context) {
@@ -93,10 +93,10 @@ void XButton::group_released(Context* context) {
   context->trellis()->controlChange(92,0x00);
 }
 
-//class YButton : public Button {
 YButton::YButton() : Button() {
   _group = 3;
 }
+
 uint32_t YButton::on_color() {
   return YELLOW;
 }
@@ -115,7 +115,6 @@ void YButton::group_released(Context* context) {
   context->trellis()->controlChange(92,0x00);
 }
 
-//class NoteButton
 NoteButton::NoteButton() : Button() {
   _group = 4;
   _value = 0;
@@ -155,19 +154,25 @@ uint32_t PlayButton::on_color() {
 }
 
 void PlayButton::pressed(byte key, Context* context) {
+  Button::pressed(key, context);
   context->trellis()->noteOn(_value, 0x7F);
 }
 
 void PlayButton::released(byte key, Context* context) {
+  Button::released(key, context);
   context->trellis()->noteOff(_value, 0x00);
 }
 
-AccelButton::AccelButton(byte cc) : Button() {
-  _cc = cc;
+AccelButton::AccelButton() : Button() {
+  _group = 3;
 }
 
 uint32_t AccelButton::on_color() {
-  return WHOKNOWS;
+  return ORANGE;
+}
+
+byte convert_accel_value(float value) {
+  return (byte)((abs(value) / 11.0) * 0x7f) & 0x7F;
 }
 
 void AccelButton::update(byte key, Context* context) {
@@ -177,11 +182,18 @@ void AccelButton::update(byte key, Context* context) {
   }
   sensors_event_t event;
   context->accel()->getEvent(&event);
-  float y_value = event.acceleration.y;
-  // TODO move to a function that does this
-  byte value = (abs(y_value) / 11.0) * 0x7f;
-  //Serial.print("accel "); Serial.print(y_value); Serial.print(","); Serial.println(value);
-  context->trellis()->controlChange(_cc, value);
+  float x_value = event.acceleration.y;
+  float y_value = event.acceleration.x;
+  context->trellis()->controlChange(12, convert_accel_value(x_value));
+  context->trellis()->controlChange(12, convert_accel_value(y_value));
+}
+
+void AccelButton::group_pressed(Context* context) {
+  context->trellis()->controlChange(92,0xFF);
+}
+
+void AccelButton::group_released(Context* context) {
+  context->trellis()->controlChange(92,0x00);
 }
 
 NextLayoutButton::NextLayoutButton() : Button() {

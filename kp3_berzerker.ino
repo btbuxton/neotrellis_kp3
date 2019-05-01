@@ -42,6 +42,7 @@ void setup() {
   TRELLIS.begin();
   TRELLIS.enableUARTMIDI(true);
   TRELLIS.setUARTMIDIchannel(MIDI_CHANNEL);
+  TRELLIS.setBrightness(0x3F);
   
   DEFAULT_LAYOUT.setNext(&ONE_OCTAVE_LAYOUT);
   ONE_OCTAVE_LAYOUT.setNext(&TWO_OCTAVE_LAYOUT);
@@ -79,9 +80,9 @@ void loop() {
 
 // TODO
 // Refactor groups - move to layout - move loop to layout as well
+// Fix colors in button - no overriding methods
 // Refactor x/y button to take cc/group cc and be the same
 // Accelerometer for x/y values (new button)
-// Mute/Hold/other buttons?
 // LFO between values ( 2 pressed )
 // Arp for notes (or between values of more than 2 pressed)
 // Level CC #93 Button # as is this

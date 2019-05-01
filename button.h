@@ -75,12 +75,12 @@ class PlayButton : public Button {
 };
 
 class AccelButton : public Button {
-  private:
-    byte _cc;
   public:
-    AccelButton(byte cc);
+    AccelButton();
     uint32_t on_color();
     void update(byte key, Context* context);
+    void group_pressed(Context* context);
+    void group_released(Context* context);
 };
 
 class NextLayoutButton : public Button {

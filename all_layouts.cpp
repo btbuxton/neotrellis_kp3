@@ -1,19 +1,38 @@
 #include "all_layouts.h"
 
 DefaultLayout::DefaultLayout() : Layout() {
-  for (byte i=0; i < 32; i++) {
-    if (i < 8) {
-      _all[i] = &xButtons[i];
-    } else if (i < 16) {
-      _all[i] = &yButtons[i - 8];
-    } else if (i == 16) {
-      _all[i] = &nextLayout;
-    } else if (i < 29) {
-      _all[i] = &misc[i - 17];
-    } else {
-      _all[i] = &tempoButtons[i - 29];
-    }
-  }
+  _all[0] = &nextLayout;
+  _all[1] = &misc[0];
+  _all[2] = &misc[1];
+  _all[3] = &misc[2];
+  _all[4] = &misc[3];
+  _all[5] = &misc[4];
+  _all[6] = &misc[5];
+  _all[7] = &misc[6];
+  _all[8] = &xButtons[0];
+  _all[9] = &xButtons[1];
+  _all[10] = &xButtons[2];
+  _all[11] = &xButtons[3];
+  _all[12] = &xButtons[4];
+  _all[13] = &xButtons[5];
+  _all[14] = &xButtons[6];
+  _all[15] = &xButtons[7];
+  _all[16] = &yButtons[0];
+  _all[17] = &yButtons[1];
+  _all[18] = &yButtons[2];
+  _all[19] = &yButtons[3];
+  _all[20] = &yButtons[4];
+  _all[21] = &yButtons[5];
+  _all[22] = &yButtons[6];
+  _all[23] = &yButtons[7];
+  _all[24] = &misc[7];
+  _all[25] = &misc[8];
+  _all[26] = &misc[9];
+  _all[27] = &misc[10];
+  _all[28] = &misc[11];
+  _all[29] = &tempoButtons[0];
+  _all[30] = &tempoButtons[1];
+  _all[31] = &tempoButtons[2];
 }
 
 /* -  C# D# -  F# G# A# -
@@ -94,7 +113,7 @@ TwoOctaveLayout::TwoOctaveLayout() : Layout() {
   _all[14] = &notes[11];
   _all[15] = &notes[12];
   
-  _all[16] = &fxDepth;
+  _all[16] = &accelXY;
   _all[17] = &notes[13];
   _all[18] = &notes[15];
   _all[19] = &samples[2];
