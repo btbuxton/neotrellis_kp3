@@ -49,16 +49,10 @@ void Button::refresh(byte key, Context* context) {
   context->trellis()->setPixelColor(key, color);
 }
 
-void Button::group_pressed(Context* context) {
-}
-
-void Button::group_released(Context* context) {
-}
-
 //class TempoButton
 TempoButton::TempoButton(uint32_t value) : Button() {
   _value = value;
-  _group = 1;
+  _group = 2;
 }
 
 uint32_t TempoButton::on_color() {
@@ -72,7 +66,7 @@ void TempoButton::pressed(byte key, Context* context) {
 
 //class XButton
 XButton::XButton() : Button() {
-  _group = 2;
+  _group = 1;
 }
 
 uint32_t XButton::on_color() {
@@ -85,16 +79,8 @@ void XButton::pressed(byte key, Context* context) {
   context->trellis()->controlChange(12, value);
 }
 
-void XButton::group_pressed(Context* context) {
-  context->trellis()->controlChange(92,0xFF);
-}
-
-void XButton::group_released(Context* context) {
-  context->trellis()->controlChange(92,0x00);
-}
-
 YButton::YButton() : Button() {
-  _group = 3;
+  _group = 1;
 }
 
 uint32_t YButton::on_color() {
@@ -107,16 +93,8 @@ void YButton::pressed(byte key, Context* context) {
   context->trellis()->controlChange(13, value);
 }
 
-void YButton::group_pressed(Context* context) {
-  context->trellis()->controlChange(92,0xFF);
-}
-
-void YButton::group_released(Context* context) {
-  context->trellis()->controlChange(92,0x00);
-}
-
 NoteButton::NoteButton() : Button() {
-  _group = 4;
+  _group = 1;
   _value = 0;
 }
 
@@ -131,14 +109,6 @@ uint32_t NoteButton::on_color() {
 void NoteButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   context->trellis()->controlChange(12, _value);
-}
-
-void NoteButton::group_pressed(Context* context) {
-  context->trellis()->controlChange(92,0xFF);
-}
-
-void NoteButton::group_released(Context* context) {
-  context->trellis()->controlChange(92,0x00);
 }
 
 PlayButton::PlayButton() : Button() {
@@ -164,7 +134,7 @@ void PlayButton::released(byte key, Context* context) {
 }
 
 AccelButton::AccelButton() : Button() {
-  _group = 3;
+  _group = 1;
 }
 
 uint32_t AccelButton::on_color() {
@@ -186,14 +156,6 @@ void AccelButton::update(byte key, Context* context) {
   float y_value = event.acceleration.x;
   context->trellis()->controlChange(12, convert_accel_value(x_value));
   context->trellis()->controlChange(12, convert_accel_value(y_value));
-}
-
-void AccelButton::group_pressed(Context* context) {
-  context->trellis()->controlChange(92,0xFF);
-}
-
-void AccelButton::group_released(Context* context) {
-  context->trellis()->controlChange(92,0x00);
 }
 
 NextLayoutButton::NextLayoutButton() : Button() {

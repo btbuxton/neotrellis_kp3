@@ -1,7 +1,17 @@
 #include "button.h"
 #include "layout.h"
 
-class DefaultLayout: public Layout {
+class CommonLayout : public Layout {
+  protected:
+    byte _group_count[4] = {0,0,0,0};
+  public:
+    void pressed(byte key, Context* context);
+    void released(byte key, Context* context);
+    virtual void group_pressed(byte group, byte count, Context* context);
+    virtual void group_released(byte group, byte count, Context* context);
+};
+
+class DefaultLayout: public CommonLayout {
   private:
     Button misc[12];
     NextLayoutButton nextLayout;
@@ -12,7 +22,7 @@ class DefaultLayout: public Layout {
     DefaultLayout();
 };
 
-class OneOctaveLayout: public Layout {
+class OneOctaveLayout: public CommonLayout {
   private:
     Button misc[10];
     NextLayoutButton nextLayout;
@@ -22,7 +32,7 @@ class OneOctaveLayout: public Layout {
     OneOctaveLayout();
 };
 
-class TwoOctaveLayout: public Layout {
+class TwoOctaveLayout: public CommonLayout {
   private:
     AccelButton accelXY = AccelButton();
     PlayButton samples[4];

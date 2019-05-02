@@ -13,4 +13,6 @@ class Layout {
     void update(Context* context);
     Layout* next();
     void setNext(Layout *layout);
+    virtual void pressed(byte key, Context* context);
+    virtual void released(byte key, Context* context);
 };

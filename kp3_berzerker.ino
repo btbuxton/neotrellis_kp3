@@ -51,24 +51,16 @@ void setup() {
 }
 
 void loop() {
-  static byte pressed_count[] = {0,0,0,0,0};
   TRELLIS.tick();
   CONTEXT.update();
   while (TRELLIS.available()) {
     keypadEvent e = TRELLIS.read();
     byte key = e.bit.KEY;
-    Button **all = CONTEXT.layout()->all();
-    Button* state = all[key];
+    Layout* layout = CONTEXT.layout();
     if (e.bit.EVENT == KEY_JUST_PRESSED) {
-      state->pressed(key, &CONTEXT);
-      if (++pressed_count[state->group()] > 0) {
-        state->group_pressed(&CONTEXT);
-      }
+      layout->pressed(key, &CONTEXT);
     } else if (e.bit.EVENT == KEY_JUST_RELEASED) {
-      state->released(key, &CONTEXT);
-      if (--pressed_count[state->group()] == 0) {
-        state->group_released(&CONTEXT);
-      }
+      layout->released(key, &CONTEXT);
     }
   }
   
@@ -79,12 +71,11 @@ void loop() {
 }
 
 // TODO
-// Refactor groups - move to layout - move loop to layout as well
+// Fix Accel -> all over the place!
 // Fix colors in button - no overriding methods
+// Remove isPressed method -> not needed -> can ask trellis
 // Refactor x/y button to take cc/group cc and be the same
-// Accelerometer for x/y values (new button)
 // LFO between values ( 2 pressed )
 // Arp for notes (or between values of more than 2 pressed)
-// Level CC #93 Button # as is this
-// FX depth CC #94 Button # this is boring # remove from button and replace with y
 // Panic button
+// FIll out...

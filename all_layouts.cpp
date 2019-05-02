@@ -1,6 +1,43 @@
 #include "all_layouts.h"
+#include "context.h"
 
-DefaultLayout::DefaultLayout() : Layout() {
+void CommonLayout::pressed(byte key, Context* context) {
+  Layout::pressed(key, context);
+  byte group = _all[key]->group();
+  if (group == 0 || group > 3) {
+    return;
+  }
+  byte count = ++_group_count[group];
+  if (count > 0) {
+    group_pressed(group, count, context);
+  }
+}
+
+void CommonLayout::released(byte key, Context* context) {
+  Layout::released(key, context);
+  byte group = _all[key]->group();
+  if (group == 0 || group > 3) {
+    return;
+  }
+  byte count = --_group_count[group];
+  if (count == 0) {
+    group_released(group, count, context);
+  }
+}
+
+void CommonLayout::group_pressed(byte group, byte count, Context* context) {
+  if (group == 1 && count > 0) {
+    context->trellis()->controlChange(92,0xFF);
+  }
+}
+
+void CommonLayout::group_released(byte group, byte count, Context* context) {
+  if (group == 1) {
+    context->trellis()->controlChange(92,0x00);
+  }
+}
+    
+DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[0] = &nextLayout;
   _all[1] = &misc[0];
   _all[2] = &misc[1];
@@ -45,7 +82,7 @@ DefaultLayout::DefaultLayout() : Layout() {
 //starts on C - the synths are 1 octave
 static const byte ONE_OCT_VALUES[] = {0,11,20,29,38,47,56,65,75,84,93,102,120};
 
-OneOctaveLayout::OneOctaveLayout() : Layout() {
+OneOctaveLayout::OneOctaveLayout() : CommonLayout() {
   for (byte i=0; i< 13; i++) {
     notes[i].value(ONE_OCT_VALUES[i]);
   }
@@ -87,7 +124,7 @@ OneOctaveLayout::OneOctaveLayout() : Layout() {
 //starts on C - the vocoders are 2 octave
 static const byte TWO_OCT_VALUES[] = {0,6,11,16,21,26,31,36,41,46,51,56,61,65,70,75,80,90,95,100,105,110,115,120,125};
 
-TwoOctaveLayout::TwoOctaveLayout() : Layout() {
+TwoOctaveLayout::TwoOctaveLayout() : CommonLayout() {
   for (byte i=0; i<25; i++) {
     notes[i].value(TWO_OCT_VALUES[i]);
   }

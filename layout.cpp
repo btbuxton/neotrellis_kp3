@@ -29,3 +29,11 @@ Layout* Layout::next() {
 void Layout::setNext(Layout *layout) {
   _next = layout;
 }
+
+void Layout::pressed(byte key, Context* context) {
+  _all[key]->pressed(key, context);
+}
+
+void Layout::released(byte key, Context* context) {
+  _all[key]->released(key, context);
+}

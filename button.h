@@ -19,8 +19,6 @@ class Button {
     virtual void pressed(byte key, Context* context);
     virtual void released(byte key, Context* context);
     virtual void refresh(byte key, Context* context);
-    virtual void group_pressed(Context* context);
-    virtual void group_released(Context* context);
 };
 
 class TempoButton : public Button {
@@ -38,8 +36,6 @@ class XButton : public Button {
       XButton();
       uint32_t on_color();
       void pressed(byte key, Context* context);
-      virtual void group_pressed(Context* context);
-      virtual void group_released(Context* context);
 };
 
 class YButton : public Button {
@@ -47,8 +43,6 @@ class YButton : public Button {
       YButton();
       uint32_t on_color();
       void pressed(byte key, Context* context);
-      virtual void group_pressed(Context* context);
-      virtual void group_released(Context* context);
 };
 
 class NoteButton : public Button {
@@ -59,8 +53,6 @@ class NoteButton : public Button {
       void value(byte new_value);
       uint32_t on_color();
       void pressed(byte key, Context* context);
-      virtual void group_pressed(Context* context);
-      virtual void group_released(Context* context);
 };
 
 class PlayButton : public Button {
@@ -79,8 +71,6 @@ class AccelButton : public Button {
     AccelButton();
     uint32_t on_color();
     void update(byte key, Context* context);
-    void group_pressed(Context* context);
-    void group_released(Context* context);
 };
 
 class NextLayoutButton : public Button {
