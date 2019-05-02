@@ -2,16 +2,12 @@
 
 class Context;
 
-class Button {
-  private:
-    boolean _pressed;
-    
+class Button {    
   protected:
     byte _group;
     
   public:
     Button();   
-    boolean isPressed();
     byte group();
     virtual uint32_t on_color();
     virtual uint32_t off_color();
@@ -59,8 +55,7 @@ class PlayButton : public Button {
   private:
     byte _value;
   public:
-    PlayButton();
-    void value(byte new_value);
+    PlayButton(byte value);
     uint32_t on_color();
     void pressed(byte key, Context* context);
     void released(byte key, Context* context);

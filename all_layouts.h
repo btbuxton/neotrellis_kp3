@@ -1,5 +1,6 @@
 #include "button.h"
 #include "layout.h"
+#include "constants.h"
 
 class CommonLayout : public Layout {
   protected:
@@ -24,10 +25,12 @@ class DefaultLayout: public CommonLayout {
 
 class OneOctaveLayout: public CommonLayout {
   private:
-    Button misc[10];
+    Button misc[5];
     NextLayoutButton nextLayout;
     NoteButton notes[13];
     YButton yButtons[8];
+    AccelButton accelXY = AccelButton();
+    PlayButton samples[4] = {PlayButton(NOTE_A), PlayButton(NOTE_B), PlayButton(NOTE_C), PlayButton(NOTE_D)};
   public:
     OneOctaveLayout();
 };
@@ -35,7 +38,7 @@ class OneOctaveLayout: public CommonLayout {
 class TwoOctaveLayout: public CommonLayout {
   private:
     AccelButton accelXY = AccelButton();
-    PlayButton samples[4];
+    PlayButton samples[4] = {PlayButton(NOTE_A), PlayButton(NOTE_B), PlayButton(NOTE_C), PlayButton(NOTE_D)};
     NextLayoutButton nextLayout;
     NoteButton notes[25];
   public:

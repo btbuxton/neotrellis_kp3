@@ -71,10 +71,9 @@ void loop() {
 }
 
 // TODO
-// Fix colors in button - no overriding methods
-// Remove isPressed method -> not needed -> can ask trellis
-// Refactor x/y button to take cc/group cc and be the same
 // LFO between values ( 2 pressed )
 // Arp for notes (or between values of more than 2 pressed)
+// Refactor x/y button to take cc/group cc and be the same
 // Panic button
-// FIll out...
+// FIll out layouts
+// Fix colors in button - no overriding methods

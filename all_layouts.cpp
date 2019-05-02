@@ -107,9 +107,14 @@ OneOctaveLayout::OneOctaveLayout() : CommonLayout() {
   for (byte i=16; i < 24; i++) {
     _all[i] = &yButtons[i - 16];
   }
-  for (byte i=24; i < 32; i++) {
-    _all[i] = &misc[i - 22];
-  }
+  _all[24] = &accelXY;
+  _all[25] = &samples[0];
+  _all[26] = &samples[1];
+  _all[27] = &samples[2];
+  _all[28] = &samples[3];
+  _all[29] = &misc[2];
+  _all[30] = &misc[3];
+  _all[31] = &misc[4];
 }
 
 /* -  C# D# -  F# G# A# -
@@ -129,10 +134,6 @@ TwoOctaveLayout::TwoOctaveLayout() : CommonLayout() {
   for (byte i=0; i<25; i++) {
     notes[i].value(TWO_OCT_VALUES[i]);
   }
-  samples[0].value(36);
-  samples[1].value(37);
-  samples[2].value(38);
-  samples[3].value(39);
   
   _all[0] = &nextLayout;
   _all[1] = &notes[1];

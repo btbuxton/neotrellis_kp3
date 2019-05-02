@@ -7,12 +7,7 @@
 static const byte CC_VALUES[] = {0x00, 0x10, 0x20, 0x30, 0x4f, 0x5F, 0x6F, 0x7F};
 
 Button::Button() {
-  _pressed = false;
   _group = 0;
-}
-    
-boolean Button::isPressed() {
-  return _pressed;
 }
 
 uint8_t Button::group() {
@@ -32,18 +27,16 @@ void Button::update(byte key, Context* context) {
 }
 
 void Button::pressed(byte key, Context* context) {
-  _pressed = true;
   context->trellis()->setPixelColor(key, on_color());
 }
 
 void Button::released(byte key, Context* context) {
-  _pressed = false;
   context->trellis()->setPixelColor(key, off_color());
 }
 
 void Button::refresh(byte key, Context* context) {
   uint32_t color = off_color();
-  if (_pressed) {
+  if (context->trellis()->isPressed(key)) {
     color = on_color();
   }
   context->trellis()->setPixelColor(key, color);
@@ -111,12 +104,8 @@ void NoteButton::pressed(byte key, Context* context) {
   context->trellis()->controlChange(12, _value);
 }
 
-PlayButton::PlayButton() : Button() {
-  _value = 0;
-}
-
-void PlayButton::value(byte new_value) {
-  _value = new_value;
+PlayButton::PlayButton(byte value) : Button() {
+  _value = value;
 }
 
 uint32_t PlayButton::on_color() {
@@ -155,7 +144,7 @@ byte convert_accel_value(float value) {
 
 void AccelButton::update(byte key, Context* context) {
   Button::update(key, context);
-  if (!isPressed()) {
+  if (!context->trellis()->isPressed(key)) {
     return;
   }
   sensors_event_t event;

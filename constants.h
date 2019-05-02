@@ -12,3 +12,8 @@
 #define CC_X 12
 #define CC_Y 13
 #define CC_TOUCH 92
+
+#define NOTE_A 36
+#define NOTE_B 37
+#define NOTE_C 38
+#define NOTE_D 39
