@@ -142,7 +142,15 @@ uint32_t AccelButton::on_color() {
 }
 
 byte convert_accel_value(float value) {
-  return (byte)((abs(value) / 11.0) * 0x7f) & 0x7F;
+  byte result;
+  value = -value;
+  if (value < 0) {
+    result = (byte)((max(value, -10.0) / 10.0 * 0x3F) + 0x40);
+  } else {
+    result = (byte)((min(value, 10.0) / 10.0 * 0x3F) + 0x40);
+  }
+  //Serial.print(value); Serial.print(" "); Serial.println(result);
+  return result;
 }
 
 void AccelButton::update(byte key, Context* context) {

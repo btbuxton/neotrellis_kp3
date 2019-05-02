@@ -37,7 +37,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("kp3+ berzerker");
   ACCEL.begin();
-  ACCEL.setRange(ADXL343_RANGE_16_G); //can be 2, 4, 8, and 16
+  ACCEL.setRange(ADXL343_RANGE_2_G); //can be 2, 4, 8, and 16
   
   TRELLIS.begin();
   TRELLIS.enableUARTMIDI(true);
@@ -71,7 +71,6 @@ void loop() {
 }
 
 // TODO
-// Fix Accel -> all over the place!
 // Fix colors in button - no overriding methods
 // Remove isPressed method -> not needed -> can ask trellis
 // Refactor x/y button to take cc/group cc and be the same
