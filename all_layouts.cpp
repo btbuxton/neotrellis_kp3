@@ -1,5 +1,6 @@
 #include "all_layouts.h"
 #include "context.h"
+#include "constants.h"
 
 void CommonLayout::pressed(byte key, Context* context) {
   Layout::pressed(key, context);
@@ -27,13 +28,13 @@ void CommonLayout::released(byte key, Context* context) {
 
 void CommonLayout::group_pressed(byte group, byte count, Context* context) {
   if (group == 1 && count > 0) {
-    context->trellis()->controlChange(92,0xFF);
+    context->trellis()->controlChange(CC_TOUCH,0xFF);
   }
 }
 
 void CommonLayout::group_released(byte group, byte count, Context* context) {
   if (group == 1) {
-    context->trellis()->controlChange(92,0x00);
+    context->trellis()->controlChange(CC_TOUCH,0x00);
   }
 }
     

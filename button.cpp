@@ -1,6 +1,6 @@
 #include <Adafruit_ADXL343.h>
 #include "button.h"
-#include "color.h"
+#include "constants.h"
 #include "layout.h"
 #include "context.h"
 
@@ -76,7 +76,7 @@ uint32_t XButton::on_color() {
 void XButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   byte value = CC_VALUES[key % 8];
-  context->trellis()->controlChange(12, value);
+  context->trellis()->controlChange(CC_X, value);
 }
 
 YButton::YButton() : Button() {
@@ -90,7 +90,7 @@ uint32_t YButton::on_color() {
 void YButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   byte value = CC_VALUES[key % 8];
-  context->trellis()->controlChange(13, value);
+  context->trellis()->controlChange(CC_Y, value);
 }
 
 NoteButton::NoteButton() : Button() {
@@ -154,8 +154,8 @@ void AccelButton::update(byte key, Context* context) {
   context->accel()->getEvent(&event);
   float x_value = event.acceleration.y;
   float y_value = event.acceleration.x;
-  context->trellis()->controlChange(12, convert_accel_value(x_value));
-  context->trellis()->controlChange(12, convert_accel_value(y_value));
+  context->trellis()->controlChange(CC_X, convert_accel_value(x_value));
+  context->trellis()->controlChange(CC_Y, convert_accel_value(y_value));
 }
 
 NextLayoutButton::NextLayoutButton() : Button() {
