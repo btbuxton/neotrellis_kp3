@@ -42,6 +42,11 @@ void Button::refresh(byte key, Context* context) {
   context->trellis()->setPixelColor(key, color);
 }
 
+void Button::cc_value(byte key, byte* cc, byte* value) {
+  *cc = 0;
+  *value = 0;
+}
+
 //class TempoButton
 TempoButton::TempoButton(uint32_t value) : Button() {
   _value = value;
@@ -70,6 +75,11 @@ void XButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   byte value = CC_VALUES[key % 8];
   context->trellis()->controlChange(CC_X, value);
+}
+
+void XButton::cc_value(byte key, byte* cc, byte* value) {
+  *cc = CC_X;
+  *value = CC_VALUES[key % 8];
 }
 
 YButton::YButton() : Button() {
@@ -101,7 +111,12 @@ uint32_t NoteButton::on_color() {
 
 void NoteButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
-  context->trellis()->controlChange(12, _value);
+  context->trellis()->controlChange(CC_X, _value);
+}
+
+void NoteButton::cc_value(byte key, byte* cc, byte* value) {
+  *cc = CC_X;
+  *value = _value;
 }
 
 PlayButton::PlayButton(byte value) : Button() {

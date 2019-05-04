@@ -28,7 +28,26 @@ void CommonLayout::released(byte key, Context* context) {
 
 void CommonLayout::group_pressed(byte group, byte count, Context* context) {
   if (group == 1 && count > 0) {
-    context->trellis()->controlChange(CC_TOUCH,0xFF);
+    if (count == 1) {
+      context->trellis()->controlChange(CC_TOUCH,0xFF);
+    } else if (count == 2) {
+      byte values[2];
+      int found = 0;
+      for (int i = 0; i < 32; i++) {
+        Button *button = _all[i];
+        if (button->group() == 1 && context->trellis()->isPressed(i)) {
+          byte value;
+          byte cc;
+          button->cc_value(i, &cc, &value);
+          if (cc == CC_X && found < 2) {
+            values[found++]=value;
+          }
+        }
+      }
+      byte minValue = min(values[0], values[1]);
+      byte maxValue = max(values[0], values[1]);
+      Serial.print("min "); Serial.print(minValue); Serial.print(" max "); Serial.println(maxValue);
+    }
   }
 }
 
