@@ -1,11 +1,7 @@
 #include "context.h"
 #include "layout.h"
+#include "constants.h"
 #include <Adafruit_ADXL343.h>
-
-#define PPQN 24
-#define MS_PER_SEC 1000
-#define MICROS_PER_MS 1000
-#define SEC_PER_MIN 60
 
 uint32_t micros_per_pulse(uint16_t tempo) {
   return (uint32_t)((SEC_PER_MIN * MS_PER_SEC * MICROS_PER_MS) / (float)(PPQN * tempo));

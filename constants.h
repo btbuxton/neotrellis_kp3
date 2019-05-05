@@ -17,3 +17,8 @@
 #define NOTE_B 37
 #define NOTE_C 38
 #define NOTE_D 39
+
+#define PPQN 24
+#define MS_PER_SEC 1000
+#define MICROS_PER_MS 1000
+#define SEC_PER_MIN 60

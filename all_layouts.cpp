@@ -2,6 +2,29 @@
 #include "context.h"
 #include "constants.h"
 
+WaveSequence::WaveSequence(Wave* wave, byte cc, byte minVal, byte maxVal) : Sequence() {
+  this->wave = wave;
+  this->cc = cc;
+  this->minVal = minVal;
+  this->maxVal = maxVal;
+}
+
+void WaveSequence::update(Context* context) {
+  float scale = (wave->next() + 1.0) / 2.0;
+  byte len = maxVal - minVal;
+  byte ccVal = minVal + (len * scale);
+  context->trellis()->controlChange(cc, ccVal);
+}
+
+void CommonLayout::update(Context* context) {
+  Layout::update(context);
+  for (byte i=0; i < 4; i++) {
+    if (_seq[i] != NULL) {
+      _seq[i]->update(context);
+    }
+  }
+}
+
 void CommonLayout::pressed(byte key, Context* context) {
   Layout::pressed(key, context);
   byte group = _all[key]->group();
@@ -46,10 +69,20 @@ void CommonLayout::group_pressed(byte group, byte count, Context* context) {
       }
       byte minValue = min(values[0], values[1]);
       byte maxValue = max(values[0], values[1]);
-      Serial.print("min "); Serial.print(minValue); Serial.print(" max "); Serial.println(maxValue);
+      lfoBetweenValues(CC_X, minValue, maxValue);
     }
   }
 }
+
+//temporary
+SineWave defWave = SineWave(PPQN * 1); //quarter note
+WaveSequence seq = WaveSequence(&defWave, 0, 0, 0);
+
+void CommonLayout::lfoBetweenValues(byte cc, byte minValue, byte maxValue) {
+  seq = WaveSequence(&defWave, cc, minValue, maxValue);
+  _seq[0] = &seq;
+}
+
 
 void CommonLayout::group_released(byte group, byte count, Context* context) {
   if (group == 1) {
