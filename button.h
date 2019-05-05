@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 class Context;
+class Wave;
 
 class Button {    
   protected:
@@ -76,4 +77,34 @@ class NextLayoutButton : public Button {
     NextLayoutButton();
     uint32_t on_color();
     void released(byte key, Context *context);
+};
+
+class LFOButton : public Button {
+  private:
+    boolean _active;
+  public:
+    LFOButton();
+    uint32_t on_color();
+    uint32_t off_color();
+    void update(byte key, Context* context);
+    void pressed(byte key, Context* context);
+    void released(byte key, Context* context);
+};
+
+
+class Sequence {
+  public:
+    virtual void update(Context *context) = 0;
+};
+
+class WaveSequence : public Sequence {
+  private:
+    Wave *wave;
+    byte cc;
+    byte minVal;
+    byte maxVal;
+
+  public:
+    WaveSequence(Wave* wave, byte cc, byte minVal, byte maxVal);
+    void update(Context *context);
 };

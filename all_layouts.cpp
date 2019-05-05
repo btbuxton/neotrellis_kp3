@@ -2,28 +2,14 @@
 #include "context.h"
 #include "constants.h"
 
-WaveSequence::WaveSequence(Wave* wave, byte cc, byte minVal, byte maxVal) : Sequence() {
-  this->wave = wave;
-  this->cc = cc;
-  this->minVal = minVal;
-  this->maxVal = maxVal;
-}
-
-void WaveSequence::update(Context* context) {
-  float scale = (wave->next() + 1.0) / 2.0;
-  byte len = maxVal - minVal;
-  byte ccVal = minVal + (len * scale);
-  context->trellis()->controlChange(cc, ccVal);
-}
-
-void CommonLayout::update(Context* context) {
-  Layout::update(context);
-  for (byte i=0; i < 4; i++) {
-    if (_seq[i] != NULL) {
-      _seq[i]->update(context);
-    }
-  }
-}
+//void CommonLayout::update(Context* context) {
+//  Layout::update(context);
+//  for (byte i=0; i < 4; i++) {
+//    if (_seq[i] != NULL) {
+//      _seq[i]->update(context);
+//    }
+//  }
+//}
 
 void CommonLayout::pressed(byte key, Context* context) {
   Layout::pressed(key, context);
@@ -54,34 +40,34 @@ void CommonLayout::group_pressed(byte group, byte count, Context* context) {
     if (count == 1) {
       context->trellis()->controlChange(CC_TOUCH,0xFF);
     } else if (count == 2) {
-      byte values[2];
-      int found = 0;
-      for (int i = 0; i < 32; i++) {
-        Button *button = _all[i];
-        if (button->group() == 1 && context->trellis()->isPressed(i)) {
-          byte value;
-          byte cc;
-          button->cc_value(i, &cc, &value);
-          if (cc == CC_X && found < 2) {
-            values[found++]=value;
-          }
-        }
-      }
-      byte minValue = min(values[0], values[1]);
-      byte maxValue = max(values[0], values[1]);
-      lfoBetweenValues(CC_X, minValue, maxValue);
+//      byte values[2];
+//      int found = 0;
+//      for (int i = 0; i < 32; i++) {
+//        Button *button = _all[i];
+//        if (button->group() == 1 && context->trellis()->isPressed(i)) {
+//          byte value;
+//          byte cc;
+//          button->cc_value(i, &cc, &value);
+//          if (cc == CC_X && found < 2) {
+//            values[found++]=value;
+//          }
+//        }
+//      }
+//      byte minValue = min(values[0], values[1]);
+//      byte maxValue = max(values[0], values[1]);
+//      lfoBetweenValues(CC_X, minValue, maxValue);
     }
   }
 }
 
-//temporary
-SineWave defWave = SineWave(PPQN * 1); //quarter note
-WaveSequence seq = WaveSequence(&defWave, 0, 0, 0);
-
-void CommonLayout::lfoBetweenValues(byte cc, byte minValue, byte maxValue) {
-  seq = WaveSequence(&defWave, cc, minValue, maxValue);
-  _seq[0] = &seq;
-}
+////temporary
+//SineWave defWave = SineWave(PPQN * 1); //quarter note
+//WaveSequence seq = WaveSequence(&defWave, 0, 0, 0);
+//
+//void CommonLayout::lfoBetweenValues(byte cc, byte minValue, byte maxValue) {
+//  seq = WaveSequence(&defWave, cc, minValue, maxValue);
+//  _seq[0] = &seq;
+//}
 
 
 void CommonLayout::group_released(byte group, byte count, Context* context) {
@@ -115,11 +101,11 @@ DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[21] = &yButtons[5];
   _all[22] = &yButtons[6];
   _all[23] = &yButtons[7];
-  _all[24] = &misc[7];
-  _all[25] = &misc[8];
-  _all[26] = &misc[9];
-  _all[27] = &misc[10];
-  _all[28] = &misc[11];
+  _all[24] = &lfoButton;
+  _all[25] = &misc[7];
+  _all[26] = &misc[8];
+  _all[27] = &misc[9];
+  _all[28] = &misc[10];
   _all[29] = &tempoButtons[0];
   _all[30] = &tempoButtons[1];
   _all[31] = &tempoButtons[2];
