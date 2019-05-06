@@ -204,14 +204,14 @@ void WaveSequence::update(Context* context) {
 
 //temp
 SineWave buttonDefWave = SineWave(PPQN * 4); //whole note
-WaveSequence buttonSeq = WaveSequence(&buttonDefWave, CC_X, 0, 127);
 
-LFOButton::LFOButton() : Button() {
+LFOButton::LFOButton(byte cc) : Button() {
   _active = false;
+  _seq = WaveSequence(&buttonDefWave, cc, 0, 127);
 }
 
 uint32_t LFOButton::on_color() {
-  return RED;
+  return RED; //TODO change
 }
 
 uint32_t LFOButton::off_color() {
@@ -227,13 +227,17 @@ void LFOButton::update(byte key, Context* context) {
   if (!_active) {
     return;
   }
-  buttonSeq.update(context);
-  context->trellis()->controlChange(CC_TOUCH,0xFF);
+  _seq.update(context);
 }
 
 void LFOButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   _active = !_active;
+  if (_active) {
+    context->trellis()->controlChange(CC_TOUCH,0xFF);
+  } else {
+    context->trellis()->controlChange(CC_TOUCH,0x00);
+  }
 }
 
 void LFOButton::released(byte key, Context* context) {

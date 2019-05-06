@@ -2,15 +2,6 @@
 #include "context.h"
 #include "constants.h"
 
-//void CommonLayout::update(Context* context) {
-//  Layout::update(context);
-//  for (byte i=0; i < 4; i++) {
-//    if (_seq[i] != NULL) {
-//      _seq[i]->update(context);
-//    }
-//  }
-//}
-
 void CommonLayout::pressed(byte key, Context* context) {
   Layout::pressed(key, context);
   byte group = _all[key]->group();
@@ -36,39 +27,8 @@ void CommonLayout::released(byte key, Context* context) {
 }
 
 void CommonLayout::group_pressed(byte group, byte count, Context* context) {
-  if (group == 1 && count > 0) {
-    if (count == 1) {
-      context->trellis()->controlChange(CC_TOUCH,0xFF);
-    } else if (count == 2) {
-//      byte values[2];
-//      int found = 0;
-//      for (int i = 0; i < 32; i++) {
-//        Button *button = _all[i];
-//        if (button->group() == 1 && context->trellis()->isPressed(i)) {
-//          byte value;
-//          byte cc;
-//          button->cc_value(i, &cc, &value);
-//          if (cc == CC_X && found < 2) {
-//            values[found++]=value;
-//          }
-//        }
-//      }
-//      byte minValue = min(values[0], values[1]);
-//      byte maxValue = max(values[0], values[1]);
-//      lfoBetweenValues(CC_X, minValue, maxValue);
-    }
-  }
+  context->trellis()->controlChange(CC_TOUCH,0xFF);
 }
-
-////temporary
-//SineWave defWave = SineWave(PPQN * 1); //quarter note
-//WaveSequence seq = WaveSequence(&defWave, 0, 0, 0);
-//
-//void CommonLayout::lfoBetweenValues(byte cc, byte minValue, byte maxValue) {
-//  seq = WaveSequence(&defWave, cc, minValue, maxValue);
-//  _seq[0] = &seq;
-//}
-
 
 void CommonLayout::group_released(byte group, byte count, Context* context) {
   if (group == 1) {

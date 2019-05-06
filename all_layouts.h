@@ -19,7 +19,7 @@ class DefaultLayout: public CommonLayout {
     NextLayoutButton nextLayout;
     XButton xButtons[8];
     YButton yButtons[8];
-    LFOButton lfoButton;
+    LFOButton lfoButton = LFOButton(CC_X);
     TempoButton tempoButtons[3] = {TempoButton(60), TempoButton(90), TempoButton(120)};
   public:
     DefaultLayout();
