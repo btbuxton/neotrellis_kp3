@@ -9,7 +9,15 @@ CoreWave::CoreWave() : Wave() {
 void CoreWave::setLength(int length) {
   this->length = length;
   this->pos = 0;
-  this->value = 0.0;
+  this->_value = 0.0;
+}
+
+void CoreWave::reset() {
+  this->pos = 0;
+}
+
+float CoreWave::value() {
+  return _value;
 }
 
 SineWave::SineWave() : CoreWave() {
@@ -22,9 +30,9 @@ void SineWave::setLength(int length) {
 
     
 float SineWave::next() {
-    value = sin(pos * divs);
+    _value = sin(pos * divs);
     pos = ++pos % length;
-    return value;
+    return _value;
 }
 
 SawWave::SawWave() : CoreWave() {
@@ -36,12 +44,12 @@ void SawWave::setLength(int length) {
 }
 
 float SawWave::next() {
-    value = slope * pos;
+    _value = slope * pos;
     if (pos > length / 2) {
-        value = slope * pos - 2;
+        _value = slope * pos - 2;
     }
     pos = ++pos % length;
-    return value;
+    return _value;
 }
 
 TriWave::TriWave() : CoreWave() {
@@ -53,26 +61,26 @@ void TriWave::setLength(int length) {
 }
 
 float TriWave::next() {
-    value = slope * pos;
+    _value = slope * pos;
     if (pos > 3 * length / 4) {
-        value = value - 4;
+        _value = _value - 4;
     } else if (pos > length / 4) {
-        value = 2 - value;
+        _value = 2 - _value;
     }
     pos = ++pos % length;
-    return value;
+    return _value;
 }
 
 SquareWave::SquareWave() : CoreWave() {
 }
 
 float SquareWave::next() {
-    value = 1;
+    _value = 1;
     if (pos > length / 2) {
-        value = -1;
+        _value = -1;
     }
     pos = ++pos % length;
-    return value;
+    return _value;
 }
 
 NegWave::NegWave(Wave* wave) : Wave() {
@@ -85,4 +93,43 @@ float NegWave::next() {
 
 void NegWave::setLength(int length) {
   wave->setLength(length);
+}
+
+void NegWave::reset() {
+  wave->reset();
+}
+
+float NegWave::value() {
+  return wave->value();
+}
+
+LFO::LFO() {
+  _length = 24;
+  _wave = _all[0];
+}
+Wave** LFO::all() {
+  return _all;
+}
+
+float LFO::next() {
+  return _wave->next();  
+}
+
+float LFO::value() {
+  return _wave->value();
+}
+
+void LFO::reset() {
+  _wave->setLength(_length);
+  _wave->reset();
+}
+
+void LFO::setLength(int length) {
+  _length = length;
+  reset();
+}
+
+void LFO::setWave(Wave* wave) {
+  _wave = wave;
+  reset();
 }

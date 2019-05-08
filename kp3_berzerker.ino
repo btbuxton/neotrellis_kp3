@@ -72,8 +72,8 @@ void loop() {
 
 // TODO
 // LFO - LFO type and speed buttons
-// Arp for notes (or between values of more than 2 pressed)
+// Implement Latch class for CC on/off
+// Arp for notes (or between values of more than 2 pressed) => just use this to know max/min values of lfo
 // Refactor x/y button to take cc/group cc and be the same
 // Panic button
 // FIll out layouts
-// Fix colors in button - no overriding methods

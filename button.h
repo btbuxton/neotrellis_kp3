@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "constants.h"
 #include "lfo.h"
 
 class Context;
@@ -82,28 +83,31 @@ class NextLayoutButton : public Button {
 class Sequence {
   public:
     virtual void update(Context *context) = 0;
+    virtual byte value() = 0;
 };
 
-class WaveSequence : public Sequence {
+class LFOSequence : public Sequence {
   private:
-    Wave *wave;
+    LFO *lfo;
     byte cc;
     byte minVal;
     byte maxVal;
+    byte _value;
 
   public:
-    WaveSequence(Wave* wave, byte cc, byte minVal, byte maxVal);
+    LFOSequence(LFO* lfo, byte cc, byte minVal, byte maxVal);
     void update(Context *context);
+    byte value();
 };
 
 class LFOButton : public Button {
   private:
     boolean _active;
-    WaveSequence _seq = WaveSequence(NULL, 0, 0, 127);
+    LFOSequence _seq = LFOSequence(NULL, 0, 0, 127);
     byte cc;
-    Wave **wave;
+    LFO* lfo;
   public:
-    LFOButton(byte cc, Wave** wave);
+    LFOButton(byte cc, LFO* lfo);
     uint32_t on_color();
     uint32_t off_color();
     void update(byte key, Context* context);
@@ -113,16 +117,25 @@ class LFOButton : public Button {
 
 class LFOTypeButton : public Button {
   private:
-    SineWave sine;
-    SquareWave square;
-    SawWave saw;
-    SawWave up;
-    SawWave innerDown;
-    NegWave down = NegWave(&innerDown);
-    Wave* waves[4] = {&sine, &square, &up,&down};
+    LFO* _lfo;
     byte currentIndex = 0;
   public:
-    Wave *current = waves[currentIndex];
+    LFOTypeButton(LFO *lfo);
     uint32_t on_color();
+    void pressed(byte key, Context* context);
     void released(byte key, Context* context);
+    void update(byte key, Context* context);
+};
+
+class LFOSpeedButton : public Button {
+  private:
+    LFO* _lfo;
+    byte currentIndex = 0;
+    byte all[9]={4*PPQN, 3*PPQN, 2*PPQN, PPQN, PPQN/2, 5*PPQN, 6*PPQN, 7*PPQN, 8*PPQN};
+  public:
+    LFOSpeedButton(LFO *lfo);
+    uint32_t on_color();
+    void pressed(byte key, Context* context);
+    void released(byte key, Context* context);
+    void update(byte key, Context* context);
 };

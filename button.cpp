@@ -182,62 +182,63 @@ void NextLayoutButton::released(byte key, Context *context) {
   context->changeToNextLayout();
 }
 
-WaveSequence::WaveSequence(Wave* wave, byte cc, byte minVal, byte maxVal) : Sequence() {
-  this->wave = wave;
+LFOSequence::LFOSequence(LFO* lfo, byte cc, byte minVal, byte maxVal) : Sequence() {
+  this->lfo = lfo;
   this->cc = cc;
   this->minVal = minVal;
   this->maxVal = maxVal;
+  this->_value = 0;
 }
 
-void WaveSequence::update(Context* context) {
-  float scale = (wave->next() + 1.0) / 2.0;
+void LFOSequence::update(Context* context) {
+  float scale = (lfo->next() + 1.0) / 2.0;
   byte len = maxVal - minVal;
-  byte ccVal = minVal + (len * scale);
-  context->trellis()->controlChange(cc, ccVal);
+  _value = minVal + (len * scale);
+  //Serial.println(_value);
+  if (cc > 0) {
+    context->trellis()->controlChange(cc, _value);
+  }
 }
 
-//void CommonLayout::lfoBetweenValues(byte cc, byte minValue, byte maxValue) {
-//  seq = WaveSequence(&defWave, cc, minValue, maxValue);
-//  _seq[0] = &seq;
-//}
+byte LFOSequence::value() {
+  return _value;
+}
 
-//temp
-//SineWave buttonDefWave = SineWave(); 
-
-
-LFOButton::LFOButton(byte cc, Wave** wave) : Button() {
+LFOButton::LFOButton(byte cc, LFO *lfo) : Button() {
   _active = false;
   this->cc = cc;
-  this->wave = wave;
+  this->lfo = lfo;
+  this->_seq = LFOSequence(lfo,0,0,127);
 }
 
 uint32_t LFOButton::on_color() {
-  return RED; //TODO change
+  return RED | _seq.value();
 }
 
 uint32_t LFOButton::off_color() {
   if (_active) {
     return on_color();
   } else {
-    return Button::off_color();
+    return Button::off_color() | _seq.value();
   }
 }
 
 void LFOButton::update(byte key, Context* context) {
   Button::update(key, context);
-  if (!_active) {
-    return;
-  }
+//  if (!_active) {
+//    return;
+//  }
   _seq.update(context);
+  uint32_t color = _active ? on_color() : off_color();
+  context->trellis()->setPixelColor(key, color);
 }
 
 void LFOButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   _active = !_active;
   if (_active) {
-    (*wave)->setLength(PPQN * 4); //whole note
-    _seq = WaveSequence(*wave, cc, 0, 127);
-    
+    lfo->setLength(PPQN * 4); //whole note
+    _seq = LFOSequence(lfo, cc, 0, 127);
     context->trellis()->controlChange(CC_TOUCH,0xFF);
   } else {
     context->trellis()->controlChange(CC_TOUCH,0x00);
@@ -249,8 +250,14 @@ void LFOButton::released(byte key, Context* context) {
   //context->trellis()->controlChange(CC_TOUCH,0x00);
 }
 
+LFOTypeButton::LFOTypeButton(LFO* lfo) {
+  _lfo = lfo;
+  _lfo->setWave(_lfo->all()[currentIndex]);
+}
+
 uint32_t LFOTypeButton::on_color() {
   switch(currentIndex) {
+    //TODO CHANGE!!
     case 0 : return BLUE;
     case 1 : return RED;
     case 2 : return GREEN;
@@ -258,8 +265,54 @@ uint32_t LFOTypeButton::on_color() {
     default: return BLACK;
   }   
 }
-void LFOTypeButton::released(byte key, Context* context) {
+
+void LFOTypeButton::pressed(byte key, Context* context) {
   currentIndex = ++currentIndex % 4;
-  current = waves[currentIndex];
+  Button::pressed(key, context);
+}
+
+void LFOTypeButton::released(byte key, Context* context) {
+  _lfo->setWave(_lfo->all()[currentIndex]);
   Button::released(key, context);
 }
+
+void LFOTypeButton::update(byte key, Context* context) {
+  Button::update(key, context);
+  if (context->trellis()->isPressed(key)) {
+    return;
+  }
+  uint32_t value = (byte)(((_lfo->value() + 1) / 2) * 0x3f);
+  value = value << 16 | value << 8 | value; 
+  context->trellis()->setPixelColor(key, off_color() | value);
+}
+
+LFOSpeedButton::LFOSpeedButton(LFO *lfo) {
+  _lfo = lfo;
+  _lfo->setLength(this->all[currentIndex]);
+}
+
+uint32_t LFOSpeedButton::on_color() {
+  return GREEN;
+}
+
+void LFOSpeedButton::pressed(byte key, Context* context) {
+  currentIndex = ++currentIndex % 9;
+  Button::pressed(key, context);
+}
+
+void LFOSpeedButton::released(byte key, Context* context) {
+  _lfo->setLength(all[currentIndex]);
+  Button::released(key, context);
+}
+
+void LFOSpeedButton::update(byte key, Context* context) {
+  Button::update(key, context);
+  if (context->trellis()->isPressed(key)) {
+    return;
+  }
+  uint32_t value = (byte)(((_lfo->value() + 1) / 2) * 0x3f);
+  value = value << 16 | value << 8 | value; 
+  context->trellis()->setPixelColor(key, off_color() | value);
+}
+
+    

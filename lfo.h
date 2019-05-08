@@ -1,6 +1,8 @@
 class Wave {
   public:
       virtual float next() = 0;
+      virtual float value() = 0;
+      virtual void reset() = 0;
       virtual void setLength(int length) = 0;
 };
   
@@ -8,10 +10,12 @@ class CoreWave : public Wave {
   protected:
     int length;
     int pos;  
-    float value;
+    float _value;
   public:
     CoreWave();
     void setLength(int length);
+    float value();
+    void reset();
 };
  
 class SineWave : public CoreWave {
@@ -54,5 +58,30 @@ class NegWave : public Wave {
   public:
       NegWave(Wave* wave);
       float next();
+      float value();
       void setLength(int length);
+      void reset();
+};
+
+class LFO {
+  private:
+    int _length;
+    Wave* _wave;
+
+    SineWave sine;
+    SquareWave square;
+    SawWave saw;
+    SawWave up;
+    SawWave innerDown;
+    NegWave down = NegWave(&innerDown);
+    Wave* _all[4] = {&sine, &square, &up,&down};
+
+  public:
+    LFO();
+    Wave** all();
+    float next();
+    float value();
+    void reset();
+    void setLength(int length);
+    void setWave(Wave* wave);
 };
