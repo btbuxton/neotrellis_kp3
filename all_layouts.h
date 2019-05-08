@@ -15,15 +15,21 @@ class CommonLayout : public Layout {
 
 class DefaultLayout: public CommonLayout {
   private:
-    LFO lfo;
+    LFO x_lfo;
+    LFO y_lfo;
     
-    Button misc[9];
+    Button misc[6];
     NextLayoutButton nextLayout;
     XButton xButtons[8];
     YButton yButtons[8];
-    LFOButton lfoButton = LFOButton(CC_X, &lfo);
-    LFOTypeButton lfoTypeButton = LFOTypeButton(&lfo);
-    LFOSpeedButton lfoSpeedButton = LFOSpeedButton(&lfo);
+    LFOButton x_lfoButton = LFOButton(CC_X, &x_lfo);
+    LFOTypeButton x_lfoTypeButton = LFOTypeButton(&x_lfo);
+    LFOSpeedButton x_lfoSpeedButton = LFOSpeedButton(&x_lfo);
+
+    LFOButton y_lfoButton = LFOButton(CC_Y, &y_lfo);
+    LFOTypeButton y_lfoTypeButton = LFOTypeButton(&y_lfo);
+    LFOSpeedButton y_lfoSpeedButton = LFOSpeedButton(&y_lfo);
+    
     TempoButton tempoButtons[3] = {TempoButton(60), TempoButton(90), TempoButton(120)};
   public:
     DefaultLayout();

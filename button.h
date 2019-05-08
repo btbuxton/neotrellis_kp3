@@ -84,10 +84,13 @@ class Sequence {
   public:
     virtual void update(Context *context) = 0;
     virtual byte value() = 0;
+    virtual void start();
+    virtual void stop();
 };
 
 class LFOSequence : public Sequence {
   private:
+    boolean enabled;
     LFO *lfo;
     byte cc;
     byte minVal;
@@ -98,6 +101,8 @@ class LFOSequence : public Sequence {
     LFOSequence(LFO* lfo, byte cc, byte minVal, byte maxVal);
     void update(Context *context);
     byte value();
+    void start();
+    void stop();
 };
 
 class LFOButton : public Button {

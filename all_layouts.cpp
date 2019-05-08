@@ -38,13 +38,13 @@ void CommonLayout::group_released(byte group, byte count, Context* context) {
     
 DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[0] = &nextLayout;
-  _all[1] = &misc[0];
-  _all[2] = &misc[1];
-  _all[3] = &misc[2];
-  _all[4] = &misc[3];
-  _all[5] = &misc[4];
-  _all[6] = &misc[5];
-  _all[7] = &misc[6];
+  _all[1] = &x_lfoButton;
+  _all[2] = &x_lfoTypeButton;
+  _all[3] = &x_lfoSpeedButton;
+  _all[4] = &y_lfoButton;
+  _all[5] = &y_lfoTypeButton;
+  _all[6] = &y_lfoSpeedButton;
+  _all[7] = &misc[0];
   _all[8] = &xButtons[0];
   _all[9] = &xButtons[1];
   _all[10] = &xButtons[2];
@@ -61,11 +61,11 @@ DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[21] = &yButtons[5];
   _all[22] = &yButtons[6];
   _all[23] = &yButtons[7];
-  _all[24] = &lfoButton;
-  _all[25] = &lfoTypeButton;
-  _all[26] = &lfoSpeedButton;
-  _all[27] = &misc[7];
-  _all[28] = &misc[8];
+  _all[24] = &misc[1];
+  _all[25] = &misc[2];
+  _all[26] = &misc[3];
+  _all[27] = &misc[4];
+  _all[28] = &misc[5];
   _all[29] = &tempoButtons[0];
   _all[30] = &tempoButtons[1];
   _all[31] = &tempoButtons[2];

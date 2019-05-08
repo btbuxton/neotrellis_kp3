@@ -183,6 +183,7 @@ void NextLayoutButton::released(byte key, Context *context) {
 }
 
 LFOSequence::LFOSequence(LFO* lfo, byte cc, byte minVal, byte maxVal) : Sequence() {
+  this->enabled = false;
   this->lfo = lfo;
   this->cc = cc;
   this->minVal = minVal;
@@ -195,13 +196,21 @@ void LFOSequence::update(Context* context) {
   byte len = maxVal - minVal;
   _value = minVal + (len * scale);
   //Serial.println(_value);
-  if (cc > 0) {
+  if (enabled && cc > 0) {
     context->trellis()->controlChange(cc, _value);
   }
 }
 
 byte LFOSequence::value() {
   return _value;
+}
+
+void LFOSequence::start() {
+  enabled = true;
+}
+
+void LFOSequence::stop() {
+  enabled = false;
 }
 
 LFOButton::LFOButton(byte cc, LFO *lfo) : Button() {
@@ -239,8 +248,10 @@ void LFOButton::pressed(byte key, Context* context) {
   if (_active) {
     lfo->setLength(PPQN * 4); //whole note
     _seq = LFOSequence(lfo, cc, 0, 127);
+    _seq.start();
     context->trellis()->controlChange(CC_TOUCH,0xFF);
   } else {
+    _seq.stop();
     context->trellis()->controlChange(CC_TOUCH,0x00);
   }
 }
