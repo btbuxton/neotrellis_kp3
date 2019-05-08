@@ -15,11 +15,12 @@ class CommonLayout : public Layout {
 
 class DefaultLayout: public CommonLayout {
   private:
-    Button misc[11];
+    Button misc[10];
     NextLayoutButton nextLayout;
     XButton xButtons[8];
     YButton yButtons[8];
-    LFOButton lfoButton = LFOButton(CC_X);
+    LFOTypeButton lfoTypeButton = LFOTypeButton();
+    LFOButton lfoButton = LFOButton(CC_X, &(lfoTypeButton.current));
     TempoButton tempoButtons[3] = {TempoButton(60), TempoButton(90), TempoButton(120)};
   public:
     DefaultLayout();

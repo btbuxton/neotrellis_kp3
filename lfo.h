@@ -1,15 +1,17 @@
 class Wave {
   public:
-      virtual float next() = 0;  
+      virtual float next() = 0;
+      virtual void setLength(int length) = 0;
 };
   
 class CoreWave : public Wave {
   protected:
-      int pos;
-      int length;
-      float value;
+    int length;
+    int pos;  
+    float value;
   public:
-    CoreWave(int length);
+    CoreWave();
+    void setLength(int length);
 };
  
 class SineWave : public CoreWave {
@@ -17,29 +19,32 @@ class SineWave : public CoreWave {
     float divs;
     
   public:
-    SineWave(int length);
+    SineWave();
     float next();
+    void setLength(int length);
 };
 
 class SawWave : public CoreWave {
   private:
       float slope;
   public:
-      SawWave(int length);
+      SawWave();
       float next();
+      void setLength(int length);
 };
 
 class TriWave : public CoreWave {
   private:
       float slope;
   public:
-      TriWave(int length);
+      TriWave();
       float next();
+      void setLength(int length);
 };
 
 class SquareWave : public CoreWave {
   public:
-    SquareWave(int length);
+    SquareWave();
     float next();
 };
 
@@ -49,4 +54,5 @@ class NegWave : public Wave {
   public:
       NegWave(Wave* wave);
       float next();
+      void setLength(int length);
 };

@@ -1,7 +1,7 @@
 #include <Arduino.h>
+#include "lfo.h"
 
 class Context;
-class Wave;
 
 class Button {    
   protected:
@@ -99,12 +99,30 @@ class WaveSequence : public Sequence {
 class LFOButton : public Button {
   private:
     boolean _active;
-    WaveSequence _seq = WaveSequence(NULL, 0, 0, 127);;
+    WaveSequence _seq = WaveSequence(NULL, 0, 0, 127);
+    byte cc;
+    Wave **wave;
   public:
-    LFOButton(byte cc);
+    LFOButton(byte cc, Wave** wave);
     uint32_t on_color();
     uint32_t off_color();
     void update(byte key, Context* context);
     void pressed(byte key, Context* context);
+    void released(byte key, Context* context);
+};
+
+class LFOTypeButton : public Button {
+  private:
+    SineWave sine;
+    SquareWave square;
+    SawWave saw;
+    SawWave up;
+    SawWave innerDown;
+    NegWave down = NegWave(&innerDown);
+    Wave* waves[4] = {&sine, &square, &up,&down};
+    byte currentIndex = 0;
+  public:
+    Wave *current = waves[currentIndex];
+    uint32_t on_color();
     void released(byte key, Context* context);
 };

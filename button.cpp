@@ -3,7 +3,6 @@
 #include "constants.h"
 #include "layout.h"
 #include "context.h"
-#include "lfo.h"
 
 static const byte CC_VALUES[] = {0x00, 0x10, 0x20, 0x30, 0x4f, 0x5F, 0x6F, 0x7F};
 
@@ -203,11 +202,13 @@ void WaveSequence::update(Context* context) {
 //}
 
 //temp
-SineWave buttonDefWave = SineWave(PPQN * 4); //whole note
+//SineWave buttonDefWave = SineWave(); 
 
-LFOButton::LFOButton(byte cc) : Button() {
+
+LFOButton::LFOButton(byte cc, Wave** wave) : Button() {
   _active = false;
-  _seq = WaveSequence(&buttonDefWave, cc, 0, 127);
+  this->cc = cc;
+  this->wave = wave;
 }
 
 uint32_t LFOButton::on_color() {
@@ -234,6 +235,9 @@ void LFOButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   _active = !_active;
   if (_active) {
+    (*wave)->setLength(PPQN * 4); //whole note
+    _seq = WaveSequence(*wave, cc, 0, 127);
+    
     context->trellis()->controlChange(CC_TOUCH,0xFF);
   } else {
     context->trellis()->controlChange(CC_TOUCH,0x00);
@@ -242,5 +246,20 @@ void LFOButton::pressed(byte key, Context* context) {
 
 void LFOButton::released(byte key, Context* context) {
   Button::released(key, context);
-  context->trellis()->controlChange(CC_TOUCH,0x00);
+  //context->trellis()->controlChange(CC_TOUCH,0x00);
+}
+
+uint32_t LFOTypeButton::on_color() {
+  switch(currentIndex) {
+    case 0 : return BLUE;
+    case 1 : return RED;
+    case 2 : return GREEN;
+    case 3 : return YELLOW;
+    default: return BLACK;
+  }   
+}
+void LFOTypeButton::released(byte key, Context* context) {
+  currentIndex = ++currentIndex % 4;
+  current = waves[currentIndex];
+  Button::released(key, context);
 }

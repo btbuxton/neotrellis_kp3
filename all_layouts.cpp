@@ -62,10 +62,10 @@ DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[22] = &yButtons[6];
   _all[23] = &yButtons[7];
   _all[24] = &lfoButton;
-  _all[25] = &misc[7];
-  _all[26] = &misc[8];
-  _all[27] = &misc[9];
-  _all[28] = &misc[10];
+  _all[25] = &lfoTypeButton;
+  _all[26] = &misc[7];
+  _all[27] = &misc[8];
+  _all[28] = &misc[9];
   _all[29] = &tempoButtons[0];
   _all[30] = &tempoButtons[1];
   _all[31] = &tempoButtons[2];

@@ -71,7 +71,7 @@ void loop() {
 }
 
 // TODO
-// LFO between values ( 2 pressed )
+// LFO - LFO type and speed buttons
 // Arp for notes (or between values of more than 2 pressed)
 // Refactor x/y button to take cc/group cc and be the same
 // Panic button

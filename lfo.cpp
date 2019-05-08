@@ -2,15 +2,24 @@
 #include <math.h>
 const float PI = 3.1415927;
 
-CoreWave::CoreWave(int length) : Wave() {
-    this->length = length;
-    this->pos = 0;
-    this->value = 0.0;
+CoreWave::CoreWave() : Wave() {
+  setLength(1);
 }
 
-SineWave::SineWave(int length) : CoreWave(length) {
-        this->divs = 2 * PI / length;
+void CoreWave::setLength(int length) {
+  this->length = length;
+  this->pos = 0;
+  this->value = 0.0;
 }
+
+SineWave::SineWave() : CoreWave() {
+}
+
+void SineWave::setLength(int length) {
+  CoreWave::setLength(length);
+  this->divs = 2 * PI / length;
+}
+
     
 float SineWave::next() {
     value = sin(pos * divs);
@@ -18,8 +27,12 @@ float SineWave::next() {
     return value;
 }
 
-SawWave::SawWave(int length) : CoreWave(length) {
-    this->slope = 2 / (float)length;
+SawWave::SawWave() : CoreWave() {
+}
+
+void SawWave::setLength(int length) {
+  CoreWave::setLength(length);
+  this->slope = 2 / (float)length;
 }
 
 float SawWave::next() {
@@ -31,8 +44,12 @@ float SawWave::next() {
     return value;
 }
 
-TriWave::TriWave(int length) : CoreWave(length) {
-    this->slope = 4 / (float)length;
+TriWave::TriWave() : CoreWave() {
+}
+
+void TriWave::setLength(int length) {
+  CoreWave::setLength(length);
+  this->slope = 4 / (float)length;
 }
 
 float TriWave::next() {
@@ -46,7 +63,7 @@ float TriWave::next() {
     return value;
 }
 
-SquareWave::SquareWave(int length) : CoreWave(length) {
+SquareWave::SquareWave() : CoreWave() {
 }
 
 float SquareWave::next() {
@@ -64,4 +81,8 @@ NegWave::NegWave(Wave* wave) : Wave() {
 
 float NegWave::next() {
     return -wave->next();
+}
+
+void NegWave::setLength(int length) {
+  wave->setLength(length);
 }
