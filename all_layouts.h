@@ -40,12 +40,17 @@ class DefaultLayout: public CommonLayout {
 
 class OneOctaveLayout: public CommonLayout {
   private:
+    LFO y_lfo;
     Button blank;
     NextLayoutButton nextLayout;
     NoteButton notes[13];
     YButton yButtons[8];
     AccelButton accelXY = AccelButton();
     PlayButton samples[4] = {PlayButton(NOTE_A), PlayButton(NOTE_B), PlayButton(NOTE_C), PlayButton(NOTE_D)};
+
+    LFOButton y_lfoButton = LFOButton(CC_Y, &y_lfo);
+    LFOTypeButton y_lfoTypeButton = LFOTypeButton(&y_lfo);
+    LFOSpeedButton y_lfoSpeedButton = LFOSpeedButton(&y_lfo);
   public:
     OneOctaveLayout();
 };

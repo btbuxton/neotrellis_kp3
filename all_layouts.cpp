@@ -110,9 +110,9 @@ OneOctaveLayout::OneOctaveLayout() : CommonLayout() {
   _all[26] = &samples[1];
   _all[27] = &samples[2];
   _all[28] = &samples[3];
-  _all[29] = &blank;
-  _all[30] = &blank;
-  _all[31] = &blank;
+  _all[29] = &y_lfoButton;
+  _all[30] = &y_lfoTypeButton;
+  _all[31] = &y_lfoSpeedButton;
 }
 
 /* -  C# D# -  F# G# A# -
