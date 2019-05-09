@@ -1,3 +1,11 @@
+// TODO / Future Enhancements
+// Refactor LFOSequence (move out of button.h/cpp)
+// Use LFOSequence instead of LFO in buttons -> This allows changing min/max values
+// Figure out how to set min/max values
+// Panic button
+// Implement Latch class for CC on/off ?! => interesting things happen now might not do
+// Arp for notes (or between values of more than 2 pressed) => just use this to know max/min values of lfo
+
 #include <Adafruit_NeoTrellisM4.h>
 #include <Adafruit_ADXL343.h>
 #include "all_layouts.h"
@@ -69,11 +77,3 @@ void loop() {
   TRELLIS.sendMIDI();
   clock_delay(CONTEXT.clockDelay());
 }
-
-// TODO
-// LFO - LFO type and speed buttons
-// Implement Latch class for CC on/off
-// Arp for notes (or between values of more than 2 pressed) => just use this to know max/min values of lfo
-// Refactor x/y button to take cc/group cc and be the same
-// Panic button
-// FIll out layouts

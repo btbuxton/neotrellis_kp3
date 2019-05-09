@@ -80,6 +80,7 @@ class NextLayoutButton : public Button {
     void released(byte key, Context *context);
 };
 
+//TODO move
 class Sequence {
   public:
     virtual void update(Context *context) = 0;
@@ -88,6 +89,7 @@ class Sequence {
     virtual void stop();
 };
 
+//TODO move
 class LFOSequence : public Sequence {
   private:
     boolean enabled;

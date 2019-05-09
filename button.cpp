@@ -182,6 +182,7 @@ void NextLayoutButton::released(byte key, Context *context) {
   context->changeToNextLayout();
 }
 
+//TODO move
 LFOSequence::LFOSequence(LFO* lfo, byte cc, byte minVal, byte maxVal) : Sequence() {
   this->enabled = false;
   this->lfo = lfo;
@@ -217,7 +218,7 @@ LFOButton::LFOButton(byte cc, LFO *lfo) : Button() {
   _active = false;
   this->cc = cc;
   this->lfo = lfo;
-  this->_seq = LFOSequence(lfo,0,0,127);
+  this->_seq = LFOSequence(lfo,cc,0,127);
 }
 
 uint32_t LFOButton::on_color() {
@@ -246,8 +247,6 @@ void LFOButton::pressed(byte key, Context* context) {
   Button::pressed(key, context);
   _active = !_active;
   if (_active) {
-    lfo->setLength(PPQN * 4); //whole note
-    _seq = LFOSequence(lfo, cc, 0, 127);
     _seq.start();
     context->trellis()->controlChange(CC_TOUCH,0xFF);
   } else {
