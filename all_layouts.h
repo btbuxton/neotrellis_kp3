@@ -18,10 +18,10 @@ class DefaultLayout: public CommonLayout {
     LFO x_lfo;
     LFO y_lfo;
     
-    Button misc[6];
     NextLayoutButton nextLayout;
     XButton xButtons[8];
     YButton yButtons[8];
+    
     LFOButton x_lfoButton = LFOButton(CC_X, &x_lfo);
     LFOTypeButton x_lfoTypeButton = LFOTypeButton(&x_lfo);
     LFOSpeedButton x_lfoSpeedButton = LFOSpeedButton(&x_lfo);
@@ -29,15 +29,18 @@ class DefaultLayout: public CommonLayout {
     LFOButton y_lfoButton = LFOButton(CC_Y, &y_lfo);
     LFOTypeButton y_lfoTypeButton = LFOTypeButton(&y_lfo);
     LFOSpeedButton y_lfoSpeedButton = LFOSpeedButton(&y_lfo);
-    
-    TempoButton tempoButtons[3] = {TempoButton(60), TempoButton(90), TempoButton(120)};
+
+    LFOResetButton lfoResetButton = LFOResetButton(&x_lfo, &y_lfo);
+
+    PlayButton samples[4] = {PlayButton(NOTE_A), PlayButton(NOTE_B), PlayButton(NOTE_C), PlayButton(NOTE_D)};
+    TempoButton tempoButtons[4] = {TempoButton(60), TempoButton(90), TempoButton(120), TempoButton(150)};
   public:
     DefaultLayout();
 };
 
 class OneOctaveLayout: public CommonLayout {
   private:
-    Button misc[5];
+    Button blank;
     NextLayoutButton nextLayout;
     NoteButton notes[13];
     YButton yButtons[8];

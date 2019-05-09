@@ -144,3 +144,13 @@ class LFOSpeedButton : public Button {
     void released(byte key, Context* context);
     void update(byte key, Context* context);
 };
+
+class LFOResetButton : public Button {
+  private:
+    LFO* _x_lfo;
+    LFO* _y_lfo;
+  public:
+    LFOResetButton(LFO* xLFO, LFO* yLFO);
+    uint32_t on_color();
+    void pressed(byte key, Context* context);
+};

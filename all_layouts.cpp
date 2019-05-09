@@ -44,7 +44,7 @@ DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[4] = &y_lfoButton;
   _all[5] = &y_lfoTypeButton;
   _all[6] = &y_lfoSpeedButton;
-  _all[7] = &misc[0];
+  _all[7] = &lfoResetButton;
   _all[8] = &xButtons[0];
   _all[9] = &xButtons[1];
   _all[10] = &xButtons[2];
@@ -61,14 +61,14 @@ DefaultLayout::DefaultLayout() : CommonLayout() {
   _all[21] = &yButtons[5];
   _all[22] = &yButtons[6];
   _all[23] = &yButtons[7];
-  _all[24] = &misc[1];
-  _all[25] = &misc[2];
-  _all[26] = &misc[3];
-  _all[27] = &misc[4];
-  _all[28] = &misc[5];
-  _all[29] = &tempoButtons[0];
-  _all[30] = &tempoButtons[1];
-  _all[31] = &tempoButtons[2];
+  _all[24] = &samples[0];
+  _all[25] = &samples[1];
+  _all[26] = &samples[2];
+  _all[27] = &samples[3];
+  _all[28] = &tempoButtons[0];
+  _all[29] = &tempoButtons[1];
+  _all[30] = &tempoButtons[2];
+  _all[31] = &tempoButtons[3];
 }
 
 /* -  C# D# -  F# G# A# -
@@ -88,11 +88,11 @@ OneOctaveLayout::OneOctaveLayout() : CommonLayout() {
   _all[0] = &nextLayout;
   _all[1] = &notes[1];
   _all[2] = &notes[3];
-  _all[3] = &misc[0];
+  _all[3] = &blank;
   _all[4] = &notes[6];
   _all[5] = &notes[8];
   _all[6] = &notes[10];
-  _all[7] = &misc[1];
+  _all[7] = &blank;
   _all[8] = &notes[0];
   _all[9] = &notes[2];
   _all[10] = &notes[4];
@@ -110,9 +110,9 @@ OneOctaveLayout::OneOctaveLayout() : CommonLayout() {
   _all[26] = &samples[1];
   _all[27] = &samples[2];
   _all[28] = &samples[3];
-  _all[29] = &misc[2];
-  _all[30] = &misc[3];
-  _all[31] = &misc[4];
+  _all[29] = &blank;
+  _all[30] = &blank;
+  _all[31] = &blank;
 }
 
 /* -  C# D# -  F# G# A# -

@@ -326,4 +326,17 @@ void LFOSpeedButton::update(byte key, Context* context) {
   context->trellis()->setPixelColor(key, off_color() | value);
 }
 
+LFOResetButton::LFOResetButton(LFO* xLFO, LFO* yLFO) : Button() {
+  _x_lfo = xLFO;
+  _y_lfo = yLFO;
+}
+
+uint32_t LFOResetButton::on_color() {
+  return ORANGE;
+}
+
+void LFOResetButton::pressed(byte key, Context* context) {
+  _x_lfo->reset();
+  _y_lfo->reset();
+}
     
