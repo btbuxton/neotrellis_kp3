@@ -1,3 +1,17 @@
+/**
+ * Controller for Korg KP3
+ * Three layouts:
+ * 1. Controls x,y via buttons, LFO, Tempo (midi clock), and samples
+ * 2. Has one octave keyboard for synth effect, y, change x,y with accel an LFO, and play samples
+ * 3.two octave keyboard for vocoder effect, change x,y with accel, and play samples
+ * 
+ * Made with Adafruit Trellis M4
+ * Uses midi out via serial
+ * 
+ * This code was made as an experiment into MIDI, C++, and the Trellis.
+ */
+
+
 // TODO / Future Enhancements
 // Refactor LFOSequence (move out of button.h/cpp)
 // Use LFOSequence instead of LFO in buttons -> This allows changing min/max values
@@ -18,6 +32,11 @@
 static Adafruit_NeoTrellisM4 TRELLIS = Adafruit_NeoTrellisM4();
 static Adafruit_ADXL343 ACCEL = Adafruit_ADXL343(123, &Wire1);
 
+/**
+ * Midi clock delay
+ * Given delay in microsends, waits. It is expected to have thi called repeatedly. 
+ * Takes difference of last call for wait.
+ */
 // This is still off by 0.5 bpm - rounding/etc
 void clock_delay(uint32_t delay_micros) {
   uint32_t now = micros();
@@ -36,11 +55,15 @@ void clock_delay(uint32_t delay_micros) {
   then = micros();
 }
 
+// Layout setup
 static DefaultLayout DEFAULT_LAYOUT = DefaultLayout();
 static OneOctaveLayout ONE_OCTAVE_LAYOUT = OneOctaveLayout();
 static TwoOctaveLayout TWO_OCTAVE_LAYOUT = TwoOctaveLayout();
 static Context CONTEXT = Context(&TRELLIS, &ACCEL, &DEFAULT_LAYOUT);
 
+/**
+ * Setup code to initialize the layouts and buttons
+ */
 void setup() {
   Serial.begin(115200);
   Serial.println("kp3+ berzerker");
@@ -58,6 +81,9 @@ void setup() {
   CONTEXT.refresh();
 }
 
+/**
+ * Loop - Send out midi clock and read any keyboard events
+ */
 void loop() {
   TRELLIS.tick();
   CONTEXT.update();

@@ -1,7 +1,15 @@
+/**
+ * All layouts defined. Each class defines a layout for the buttons
+ * it is recommended to keep the top left most button as the switcher.
+ */
+
 #include "button.h"
 #include "layout.h"
 #include "constants.h"
 
+/**
+ * Common code for each layout. It probably can be moved to Layout itself
+ */
 class CommonLayout : public Layout {
   protected:
     byte _group_count[4] = {0,0,0,0};
@@ -13,6 +21,9 @@ class CommonLayout : public Layout {
     virtual void group_released(byte group, byte count, Context* context);
 };
 
+/**
+ * Layout with x,y buttons, etc. This was the initial playground.
+ */
 class DefaultLayout: public CommonLayout {
   private:
     LFO x_lfo;
@@ -38,6 +49,10 @@ class DefaultLayout: public CommonLayout {
     DefaultLayout();
 };
 
+/**
+ * Layout for the synth effect
+ * A one octave keyboard with additional buttons
+ */
 class OneOctaveLayout: public CommonLayout {
   private:
     LFO y_lfo;
@@ -55,6 +70,9 @@ class OneOctaveLayout: public CommonLayout {
     OneOctaveLayout();
 };
 
+/**
+ * Two octave layout for the vocoder patches
+ */
 class TwoOctaveLayout: public CommonLayout {
   private:
     AccelButton accelXY = AccelButton();

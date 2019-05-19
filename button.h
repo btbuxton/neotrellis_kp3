@@ -1,3 +1,7 @@
+/**
+ * Definitions for all of the button types
+ */
+
 #include <Arduino.h>
 #include "constants.h"
 #include "lfo.h"

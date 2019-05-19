@@ -1,7 +1,15 @@
+/** 
+ *  Implementations for all layouts
+ */
+
 #include "all_layouts.h"
 #include "context.h"
 #include "constants.h"
 
+/**
+ * The next four methods control the grouping of buttons for the touch/release CC
+ * Makes me think this functionality should be moved out to somewhere else.
+ */
 void CommonLayout::pressed(byte key, Context* context) {
   Layout::pressed(key, context);
   byte group = _all[key]->group();

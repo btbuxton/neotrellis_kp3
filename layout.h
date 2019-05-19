@@ -1,3 +1,6 @@
+/**
+ * Common definition of layout
+ */
 class Context;
 class Button;
 

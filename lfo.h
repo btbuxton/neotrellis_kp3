@@ -1,3 +1,7 @@
+/**
+ * Generic LFO generators that simply output a float of -1 to 1 given a discrete
+ * length for the cycle.
+ */
 class Wave {
   public:
       virtual float next() = 0;

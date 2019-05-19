@@ -1,3 +1,6 @@
+/**
+ * Constants for the entire project
+ */
 #include <Adafruit_NeoPixel.h>
 
 #define BLACK Adafruit_NeoPixel::Color(0,0,0)

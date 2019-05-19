@@ -1,3 +1,8 @@
+/**
+ * Context is the manager of the layouts and allows them to be switched. 
+ * It also holds common objects needed throughout project.
+ * This is where common actions (like issuing an update for all) is placed.
+ */
 #include <Adafruit_NeoTrellisM4.h>
 
 class Adafruit_ADXL343;
